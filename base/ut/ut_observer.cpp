@@ -1,6 +1,6 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include <aelib/base/observer.h>
+#include <base/observer.h>
 
 class IMyObserver {
   public:

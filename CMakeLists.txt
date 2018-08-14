@@ -1,8 +1,46 @@
+cmake_minimum_required (VERSION 3.7)
+project (aelib VERSION 0.0.1)
+include (../.devenv.cmake)
+
+enable_testing()
+find_package(Boost 1.36.0 REQUIRED)
+find_package(Threads REQUIRED)
+find_package(Poco REQUIRED)
+
+# Use googlemock as submodule
+##################################################
+configure_file(CMakeLists.txt.gtest.in ${GOOGLETEST_DIRECTORY}/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${GOOGLETEST_DIRECTORY} )
+if(result)
+  message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+endif()
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${GOOGLETEST_DIRECTORY} )
+if(result)
+  message(FATAL_ERROR "Build step for googletest failed: ${result}")
+endif()
+
+# Prevent overriding the parent project's compiler/linker
+# settings on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+# Add googletest directly to our build. This defines
+# the gtest and gtest_main targets.
+add_subdirectory(${GOOGLETEST_DIRECTORY}/googletest-src
+                 ${GOOGLETEST_DIRECTORY}/googletest-build)
+
+include_directories("${gtest_SOURCE_DIR}/include"
+                    "${gmock_SOURCE_DIR}/include")
+
+include_directories(${PROJECT_SOURCE_DIR} ${Boost_INCLUDE_DIRS} ${CMAKE_DEV_BASEPATH} ${Poco_INCLUDE_DIRS})
+
 # AE Library
 SET(AELIB_SM_SOURCES sm/sml_event.cpp sm/sml_eventhandlerexpression.cpp sm/sml_ids.cpp sm/sml_simpleaction.cpp sm/sml_simpleguard.cpp sm/sml_state.cpp sm/sml_statemachine.cpp sm/sml_statemachineinstance.cpp)
 
 add_library(aelib ${AELIB_SM_SOURCES})
-set_target_properties(aelib PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_DEV_LIBPATH})
 set_property(TARGET aelib PROPERTY CXX_STANDARD 17)
 
 # A* Algorithm unittest

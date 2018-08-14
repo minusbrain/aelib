@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include <aelib/base.h>
+#include <base.h>
 
 TEST(EasierSorting, SortIntegerVector_ExpectEqual) {
     std::vector<int> dut = {13, 5, 24, 1};
@@ -61,7 +61,8 @@ TEST(EasierSorting, SortIntegerPlainArray_ExpectEqual) {
     int dut[] = {13, 5, 24, 1};
     int ref[] = {1, 5, 13, 24};
 
-    ae::sort<int, 4>(dut); // Length of array is required to do a comparison of plain arrays
+    ae::sort<int, 4>(
+      dut); // Length of array is required to do a comparison of plain arrays
 
     EXPECT_EQ(0, memcmp(dut, ref, 4 * sizeof(int)));
 }
@@ -112,8 +113,10 @@ TEST(ContainerStreaming, StreamIntegerToStringMap_ExpectCorrectString) {
 }
 
 TEST(ContainerStreaming, StreamStringToVectorOfIntegerMap_ExpectCorrectString) {
-    std::map<std::string, std::vector<int>> dut = {{"Auto", {1, 2, 3, 4, 5}}, {"Mofa", {100, -3}}};
-    std::string ref = "Map {{Auto -> Vector {1, 2, 3, 4, 5}}, {Mofa -> Vector {100, -3}}}";
+    std::map<std::string, std::vector<int>> dut = {{"Auto", {1, 2, 3, 4, 5}},
+                                                   {"Mofa", {100, -3}}};
+    std::string ref =
+      "Map {{Auto -> Vector {1, 2, 3, 4, 5}}, {Mofa -> Vector {100, -3}}}";
     std::ostringstream os;
     os << dut;
 
@@ -140,7 +143,8 @@ std::ostream& operator<<(std::ostream& os, const MyType& mytype) {
 
 TEST(ContainerStreaming, StreamUserTypeVector_ExpectCorrectString) {
     std::vector<MyType> dut = {{13, "Auto"}, {5, "Mofa"}, {24, "Bus"}};
-    std::string ref = "Vector {MyType {13, Auto}, MyType {5, Mofa}, MyType {24, Bus}}";
+    std::string ref =
+      "Vector {MyType {13, Auto}, MyType {5, Mofa}, MyType {24, Bus}}";
     std::ostringstream os;
     os << dut;
 

@@ -1,8 +1,8 @@
-#include <aelib/sm/sml_if_statemachineinstance.h>
-#include <aelib/sm/sml_simpleaction.h>
-#include <aelib/sm/sml_simpleguard.h>
-#include <aelib/sm/sml_state.h>
-#include <aelib/sm/sml_statemachine.h>
+#include <sm/sml_if_statemachineinstance.h>
+#include <sm/sml_simpleaction.h>
+#include <sm/sml_simpleguard.h>
+#include <sm/sml_state.h>
+#include <sm/sml_statemachine.h>
 
 namespace sml {
 State::State() : _name(""), _events(), _entryActions(), _exitActions() {}

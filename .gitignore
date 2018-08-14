@@ -1,0 +1,10 @@
+release/
+debug/
+build/
+_build/
+bin/
+lib/
+*.sublime-workspace
+*.a
+*.so
+*.pyc

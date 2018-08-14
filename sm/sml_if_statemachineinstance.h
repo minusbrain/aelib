@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <aelib/sm/sml_ids.h>
+#include <sm/sml_ids.h>
 
 namespace sml {
 class IAction;

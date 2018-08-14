@@ -1,4 +1,4 @@
-#include <aelib/sm/sml_statemachineinstance.h>
-#include <aelib/sm/sml_statemachine.h>
-#include <aelib/sm/sml_ids.h>
-#include <aelib/sm/sml_eventhandlerexpression.h>
+#include <sm/sml_eventhandlerexpression.h>
+#include <sm/sml_ids.h>
+#include <sm/sml_statemachine.h>
+#include <sm/sml_statemachineinstance.h>

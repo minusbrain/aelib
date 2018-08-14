@@ -1,18 +1,17 @@
 #pragma once
 #include <functional>
-#include <aelib/sm/sml_if_action.h>
+#include <sm/sml_if_action.h>
 
 namespace sml {
-    class SimpleAction: public IAction
-    {
-    public:
-        SimpleAction();
-        SimpleAction(std::function<void(void)>);
-        virtual ~SimpleAction();
+class SimpleAction : public IAction {
+  public:
+    SimpleAction();
+    SimpleAction(std::function<void(void)>);
+    virtual ~SimpleAction();
 
-        virtual void execute(void* ptr = nullptr);
+    virtual void execute(void* ptr = nullptr);
 
-    private:
-        std::function < void(void)> _functionToCall;
-    };
+  private:
+    std::function<void(void)> _functionToCall;
+};
 }

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <aelib/sm/sml_ids.h>
-#include <aelib/sm/sml_if_action.h>
-#include <aelib/sm/sml_if_guard.h>
-#include <aelib/sm/sml_if_statemachineinstance.h>
-#include <aelib/sm/sml_state.h>
-#include <aelib/sm/sml_statemachine.h>
 #include <memory>
+#include <sm/sml_ids.h>
+#include <sm/sml_if_action.h>
+#include <sm/sml_if_guard.h>
+#include <sm/sml_if_statemachineinstance.h>
+#include <sm/sml_state.h>
+#include <sm/sml_statemachine.h>
 #include <string>
 #include <vector>
 
