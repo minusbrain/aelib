@@ -1,0 +1,27 @@
+Overview
+========
+Current Version : 0.02
+Author          : Andreas Evers
+Creation date   : 01/2015
+
+Change History
+==============
+Version 0.02 (01/2015)
+-> Allow actions and guards via user-definable interfaces.
+-> Allow different instances of user-defined interface per StateMachineInstance
+-> Improved unit-tests
+
+Version 0.01 (11/2014)
+-> Initial version
+-> StateMachine for creation and storage of state machine prototypes
+-> StateMachineInstance for storing and interacting with instances of state machines
+-> States with no hirachies but with entry and exit actions
+-> Transitions between states triggered by events, protected by simple guards and triggering simple actions (both std::function based)
+
+
+Planned features
+================
+-> Hirachy of states: Sub-States and Super-States
+-> Decision-States with conditional statements and auto-transitions based on result of condition
+-> Sub-State history
+-> Clean up library interface. StateMachine.h still publishes to many internals.
