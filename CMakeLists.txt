@@ -64,6 +64,11 @@ set_property(TARGET aelib_ut_tree PROPERTY CXX_STANDARD 17)
 
 add_test(Test_Tree aelib_ut_tree)
 
+# Binary Tree performance tests
+add_executable(aelib_perf_tree tree/perftest/main.cpp)
+target_link_libraries(aelib_perf_tree ${CMAKE_THREAD_LIBS_INIT})
+set_property(TARGET aelib_perf_tree PROPERTY CXX_STANDARD 17)
+
 # Improve containers and algorithms
 add_executable(aelib_ut_base base/ut/ut_improve_containers.cpp base/ut/ut_algorithms.cpp)
 target_link_libraries(aelib_ut_base gmock_main ${CMAKE_THREAD_LIBS_INIT} aelib)
