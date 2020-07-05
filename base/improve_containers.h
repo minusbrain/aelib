@@ -2,56 +2,105 @@
 #define _IMPROVE_CONTAINERS_H_
 
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <list>
 #include <map>
 #include <vector>
 
-namespace ae {
+namespace base
+{
 template <typename T>
-std::ostream& stream_out_plain_container(char const* str, std::ostream& os,
-                                         const T& container) {
+inline std::ostream& stream_out_plain_object(T obj, std::ostream& os)
+{
+    os << obj;
+    return os;
+}
+
+template <>
+inline std::ostream& stream_out_plain_object<uint8_t>(uint8_t obj, std::ostream& os)
+{
+    os << "0x" << std::hex << std::setfill('0') << std::setw(2) << obj;
+    return os;
+}
+
+/**
+ * @brief      ostream operator to stream out vectors of any type
+ *
+ * This streams out the content of the provided vector to the provided
+ * ostream. Only limitation is there must also be an operator implementation
+ * to stream out a single element of T.
+ *
+ * Example Usage:
+ * @code{.cpp}
+ * std::vector<std::string> vec{"hello", "world"};
+ *
+ * std::cout << vec;
+ * @endcode
+ *
+ * @param      os         The output stream
+ * @param[in]  container  The container to stream out
+ *
+ * @tparam     T       The element type of the vector
+ *
+ * @return     The updated output stream
+ */
+template <typename T>
+inline std::ostream& stream_out_plain_container(char const* str, std::ostream& os,
+                                                const T& container)
+{
     bool skip = true;
     os << str << " {";
-    for (auto& x : container) {
-        if (skip) {
+    for (auto& x : container)
+    {
+        if (skip)
+        {
             skip = false;
         }
-        else {
+        else
+        {
             os << ", ";
         }
-        os << x;
+
+        stream_out_plain_object(x, os);
     }
     os << "}";
     return os;
 }
-}
+
+}  // namespace base
 
 template <typename T, size_t size>
-std::ostream& operator<<(std::ostream& os, const std::array<T, size>& vec) {
-    return ae::stream_out_plain_container<std::array<T, size>>("Array", os,
-                                                               vec);
+inline std::ostream& operator<<(std::ostream& os, const std::array<T, size>& arr)
+{
+    return base::stream_out_plain_container<std::array<T, size>>("Array", os, arr);
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
-    return ae::stream_out_plain_container<std::vector<T>>("Vector", os, vec);
+inline std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)
+{
+    return base::stream_out_plain_container<std::vector<T>>("Vector", os, vec);
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::list<T>& list) {
-    return ae::stream_out_plain_container<std::list<T>>("List", os, list);
+inline std::ostream& operator<<(std::ostream& os, const std::list<T>& list)
+{
+    return base::stream_out_plain_container<std::list<T>>("List", os, list);
 }
 
 template <typename Key, typename Val>
-std::ostream& operator<<(std::ostream& os, const std::map<Key, Val>& map) {
+inline std::ostream& operator<<(std::ostream& os, const std::map<Key, Val>& map)
+{
     bool skip = true;
     os << "Map {";
-    for (auto& x : map) {
-        if (skip) {
+    for (auto& x : map)
+    {
+        if (skip)
+        {
             skip = false;
         }
-        else {
+        else
+        {
             os << ", ";
         }
         os << "{" << x.first << " -> " << x.second << "}";
@@ -60,50 +109,67 @@ std::ostream& operator<<(std::ostream& os, const std::map<Key, Val>& map) {
     return os;
 }
 
-namespace ae {
-template <typename T> void sort(T& container) {
+namespace base
+{
+template <typename T>
+void sort(T& container)
+{
     std::sort(container.begin(), container.end());
 }
 
-template <typename T, size_t len> void sort(T* container) {
+template <typename T, size_t len>
+void sort(T* container)
+{
     std::sort(container, container + len);
 }
 
-template <typename X> void sort(std::list<X>& container) { container.sort(); }
+template <typename X>
+void sort(std::list<X>& container)
+{
+    container.sort();
+}
 
-template <typename T, class Compare> void sort(T& container, Compare comp) {
+template <typename T, class Compare>
+void sort(T& container, Compare comp)
+{
     std::sort(container.begin(), container.end(), comp);
 }
 
 template <typename T, size_t len, class Compare>
-void sort(T* container, Compare comp) {
+void sort(T* container, Compare comp)
+{
     std::sort(container, container + len, comp);
 }
 
 template <typename X, class Compare>
-void sort(std::list<X>& container, Compare comp) {
+void sort(std::list<X>& container, Compare comp)
+{
     container.sort(comp);
 }
 
 template <class T, class UnaryPredicate>
-int count_if(T& container, UnaryPredicate pred) {
+int count_if(T& container, UnaryPredicate pred)
+{
     return count_if(container.begin(), container.end(), pred);
 }
 
 template <class T, class UnaryPredicate>
-typename T::iterator remove_if(T& container, UnaryPredicate pred) {
+typename T::iterator remove_if(T& container, UnaryPredicate pred)
+{
     return remove_if(container.begin(), container.end(), pred);
 }
 
 template <class T, class UnaryPredicate>
-typename T::iterator find_if(T& container, UnaryPredicate pred) {
+typename T::iterator find_if(T& container, UnaryPredicate pred)
+{
     return find_if(container.begin(), container.end(), pred);
 }
 
 template <class T, class UnaryFunction>
-UnaryFunction for_each(T& container, UnaryFunction func) {
+UnaryFunction for_each(T& container, UnaryFunction func)
+{
     return for_each(container.begin(), container.end(), func);
 }
-}
+}  // namespace base
 
-#endif //_IMPROVE_CONTAINERS_H_
+#endif  //_IMPROVE_CONTAINERS_H_

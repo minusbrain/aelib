@@ -5,30 +5,33 @@
 
 #include "CommonData.h"
 
-TEST(UT005EraseItem, RemoveOnlyExistingItem_NoThrowAndSize0) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveOnlyExistingItem_NoThrowAndSize0)
+{
+    base::Tree<int> tree;
     tree.insert(32987);
     ASSERT_NO_THROW(tree.erase(tree.find(32987)));
     ASSERT_EQ(0, tree.size());
 }
 
-TEST(UT005EraseItem, RemoveOnlyExistingItem_IsEmptyTrue) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveOnlyExistingItem_IsEmptyTrue)
+{
+    base::Tree<int> tree;
     tree.insert(32987);
     tree.erase(tree.find(32987));
     ASSERT_TRUE(tree.empty());
 }
 
-TEST(UT005EraseItem, RemoveOnlyExistingItem_CannotFindItem) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveOnlyExistingItem_CannotFindItem)
+{
+    base::Tree<int> tree;
     tree.insert(32987);
     tree.erase(tree.find(32987));
     ASSERT_TRUE(tree.find(32987) == tree.end());
 }
 
-TEST(UT005EraseItem,
-     RemoveRootItemWithOneChildRight_NoThrowSizeCorrectAndCannotFind) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveRootItemWithOneChildRight_NoThrowSizeCorrectAndCannotFind)
+{
+    base::Tree<int> tree;
     tree.insert(5);
     tree.insert(6);
     ASSERT_NO_THROW(tree.erase(tree.find(5)));
@@ -37,9 +40,9 @@ TEST(UT005EraseItem,
     ASSERT_TRUE(tree.find(6) != tree.end());
 }
 
-TEST(UT005EraseItem,
-     RemoveRootItemWithOneChildLeft_NoThrowSizeCorrectAndCannotFind) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveRootItemWithOneChildLeft_NoThrowSizeCorrectAndCannotFind)
+{
+    base::Tree<int> tree;
     tree.insert(6);
     tree.insert(5);
     ASSERT_NO_THROW(tree.erase(tree.find(6)));
@@ -48,9 +51,9 @@ TEST(UT005EraseItem,
     ASSERT_TRUE(tree.find(5) != tree.end());
 }
 
-TEST(UT005EraseItem,
-     RemoveItemWithOneChildRight_NoThrowSizeCorrectAndCannotFind) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveItemWithOneChildRight_NoThrowSizeCorrectAndCannotFind)
+{
+    base::Tree<int> tree;
     tree.insert(10);
     tree.insert(9);
     tree.insert(11);
@@ -62,9 +65,9 @@ TEST(UT005EraseItem,
     ASSERT_TRUE(tree.find(10) != tree.end());
 }
 
-TEST(UT005EraseItem,
-     RemoveItemWithOneChildLeft_NoThrowSizeCorrectAndCannotFind) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveItemWithOneChildLeft_NoThrowSizeCorrectAndCannotFind)
+{
+    base::Tree<int> tree;
     tree.insert(10);
     tree.insert(9);
     tree.insert(11);
@@ -76,9 +79,9 @@ TEST(UT005EraseItem,
     ASSERT_TRUE(tree.find(10) != tree.end());
 }
 
-TEST(UT005EraseItem,
-     RemoveRootItemWithTwoChildrenCloseZ_NoThrowSizeCorrectAndCannotFind) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveRootItemWithTwoChildrenCloseZ_NoThrowSizeCorrectAndCannotFind)
+{
+    base::Tree<int> tree;
     tree.insert(5);
     tree.insert(6);
     tree.insert(4);
@@ -89,9 +92,9 @@ TEST(UT005EraseItem,
     ASSERT_TRUE(tree.find(4) != tree.end());
 }
 
-TEST(UT005EraseItem,
-     RemoveRootItemWithTwoChildrenFarZ_NoThrowSizeCorrectAndCannotFind) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveRootItemWithTwoChildrenFarZ_NoThrowSizeCorrectAndCannotFind)
+{
+    base::Tree<int> tree;
     tree.insert(6);
     tree.insert(8);
     tree.insert(4);
@@ -106,9 +109,9 @@ TEST(UT005EraseItem,
     ASSERT_TRUE(tree.find(7) != tree.end());
 }
 
-TEST(UT005EraseItem,
-     RemoveItemWithTwoChildrenCloseZ_NoThrowSizeCorrectAndCannotFind) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveItemWithTwoChildrenCloseZ_NoThrowSizeCorrectAndCannotFind)
+{
+    base::Tree<int> tree;
     tree.insert(100);
     tree.insert(50);
     tree.insert(150);
@@ -125,9 +128,9 @@ TEST(UT005EraseItem,
     ASSERT_TRUE(tree.find(50) != tree.end());
 }
 
-TEST(UT005EraseItem,
-     RemoveItemWithTwoChildrenFarZ_NoThrowSizeCorrectAndCannotFind) {
-    ae::Tree<int> tree;
+TEST(UT005EraseItem, RemoveItemWithTwoChildrenFarZ_NoThrowSizeCorrectAndCannotFind)
+{
+    base::Tree<int> tree;
     tree.insert(100);
     tree.insert(50);
     tree.insert(150);
