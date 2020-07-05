@@ -1,15 +1,41 @@
+/**
+ * @author     Andreas Evers
+ *
+ * @copyright  Copyright © 2020 Andreas Evers
+ *
+ * MIT License
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the “Software”), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy, modify,
+ * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 #pragma once
 
-#include <functional>
-#include <map>
-#include <memory>
 #include <sm/sml_event.h>
 #include <sm/sml_ids.h>
 #include <sm/sml_interfaceaction.h>
 #include <sm/sml_interfaceguard.h>
+
+#include <functional>
+#include <map>
+#include <memory>
 #include <string>
 
-namespace sml {
+namespace sml
+{
 static const unsigned int STATE_BM = 0x01000000;
 static const unsigned int ACTION_BM = 0x02000000;
 static const unsigned int EVENT_BM = 0x04000000;
@@ -22,8 +48,9 @@ class State;
 class IAction;
 class IGuard;
 
-class StateMachine {
-  public:
+class StateMachine
+{
+   public:
     virtual ~StateMachine();
 
     static StateMachine create(const std::string& name);
@@ -48,7 +75,7 @@ class StateMachine {
     IAction* getActionById(ActionId);
     IGuard* getGuardById(GuardId);
 
-  private:
+   private:
     std::string _name;
 
     std::map<StateId, State> _stateMap;
@@ -68,15 +95,16 @@ class StateMachine {
 };
 
 template <class T_If>
-ActionId
-StateMachine::createInterfaceAction(std::function<void(T_If&)> fctToCall) {
+ActionId StateMachine::createInterfaceAction(std::function<void(T_If&)> fctToCall)
+{
     return createInterfaceActionHelper(new InterfaceAction<T_If>(fctToCall));
 }
 
 template <class T_If>
 GuardId StateMachine::createInterfaceGuard(std::function<bool(T_If&)> fctToCall,
-                                           bool expectedResult) {
+                                           bool expectedResult)
+{
     return createInterfaceGuardHelper(
-      new InterfaceGuard<T_If>(fctToCall, expectedResult));
+        new InterfaceGuard<T_If>(fctToCall, expectedResult));
 }
-}
+}  // namespace sml

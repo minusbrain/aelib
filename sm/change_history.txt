@@ -1,11 +1,17 @@
 Overview
 ========
-Current Version : 0.02
+Current Version : 0.03
 Author          : Andreas Evers
 Creation date   : 01/2015
 
 Change History
 ==============
+Version 0.03 (07/2020)
+-> CMake cleanup
+-> Clang Format
+-> MIT License
+-> Embed in aelib
+
 Version 0.02 (01/2015)
 -> Allow actions and guards via user-definable interfaces.
 -> Allow different instances of user-defined interface per StateMachineInstance
