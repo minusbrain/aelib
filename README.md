@@ -17,7 +17,7 @@ Preconditions:
 
 Functions:
 
-* Recursive print a Poco abstract configuration objectz
+* Recursive print a Poco abstract configuration object
 
 ## General purpose tools
 
