@@ -24,10 +24,8 @@
  */
 #pragma once
 
-namespace sml
-{
-class IAction
-{
+namespace sml {
+class IAction {
    public:
     virtual ~IAction(){};
 

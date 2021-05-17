@@ -27,8 +27,7 @@
 #include <exception>
 #include <limits>
 
-namespace sml
-{
+namespace sml {
 unsigned int Id::getRawId() const { return _id; }
 
 Id::Id(unsigned int id) : _id(id) {}

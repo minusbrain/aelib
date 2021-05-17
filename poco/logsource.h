@@ -38,31 +38,21 @@
 
 // Outside of LogSource class these macros can be used but a pointer to a
 // Logger needs to be provided manually
-#define TRC_LOGGER_FATAL(logger, text) \
-    logger->log(__FILE__, __LINE__, base::TRC_LEVEL_FATAL, text)
-#define TRC_LOGGER_ERROR(logger, text) \
-    logger->log(__FILE__, __LINE__, base::TRC_LEVEL_ERROR, text)
-#define TRC_LOGGER_WARN(logger, text) \
-    logger->log(__FILE__, __LINE__, base::TRC_LEVEL_WARN, text)
-#define TRC_LOGGER_INFO(logger, text) \
-    logger->log(__FILE__, __LINE__, base::TRC_LEVEL_INFO, text)
-#define TRC_LOGGER_DEBUG(logger, text) \
-    logger->log(__FILE__, __LINE__, base::TRC_LEVEL_DEBUG, text)
-#define TRC_LOGGER_TRACE(logger, text) \
-    logger->log(__FILE__, __LINE__, base::TRC_LEVEL_TRACE, text)
+#define TRC_LOGGER_FATAL(logger, text) logger->log(__FILE__, __LINE__, base::TRC_LEVEL_FATAL, text)
+#define TRC_LOGGER_ERROR(logger, text) logger->log(__FILE__, __LINE__, base::TRC_LEVEL_ERROR, text)
+#define TRC_LOGGER_WARN(logger, text) logger->log(__FILE__, __LINE__, base::TRC_LEVEL_WARN, text)
+#define TRC_LOGGER_INFO(logger, text) logger->log(__FILE__, __LINE__, base::TRC_LEVEL_INFO, text)
+#define TRC_LOGGER_DEBUG(logger, text) logger->log(__FILE__, __LINE__, base::TRC_LEVEL_DEBUG, text)
+#define TRC_LOGGER_TRACE(logger, text) logger->log(__FILE__, __LINE__, base::TRC_LEVEL_TRACE, text)
 #define TRC_LOGGER_SCOPED(logger, text) base::ScopedLogLogger _scope(logger, text)
-#define TRC_LOGGER_SCOPED_FUNC(logger) \
-    base::ScopedLogLogger _scope(logger, __PRETTY_FUNCTION__)
+#define TRC_LOGGER_SCOPED_FUNC(logger) base::ScopedLogLogger _scope(logger, __PRETTY_FUNCTION__)
 
-namespace base
-{
-class LogSource
-{
+namespace base {
+class LogSource {
    public:
     LogSource(std::string name) : _logger(LogManager::instance().getLogger(name)) {}
 
-    void _log(std::string filename, uint32_t line, uint8_t level, std::string trace) const
-    {
+    void _log(std::string filename, uint32_t line, uint8_t level, std::string trace) const {
         _logger->log(filename, line, level, trace);
     }
 
@@ -74,36 +64,28 @@ class LogSource
     std::shared_ptr<Logger> _logger;
 };
 
-class ScopedLogLogger
-{
+class ScopedLogLogger {
    public:
-    ScopedLogLogger(const LogSource& src, std::string text)
-        : _logger(src._getLogger()), _text(text)
-    {
+    ScopedLogLogger(const LogSource& src, std::string text) : _logger(src._getLogger()), _text(text) {
         entryTrace();
         //++_instances;
     }
-    ScopedLogLogger(std::shared_ptr<Logger> logger, std::string text)
-        : _logger(logger), _text(text)
-    {
+    ScopedLogLogger(std::shared_ptr<Logger> logger, std::string text) : _logger(logger), _text(text) {
         entryTrace();
         //++_instances;
     }
 
-    ~ScopedLogLogger()
-    {
+    ~ScopedLogLogger() {
         //--_instances;
         exitTrace();
     }
 
    private:
-    void entryTrace()
-    {
+    void entryTrace() {
         _logger->log(TRC_LEVEL_TRACE,
                      /*std::string(_instances * 2, ' ') + */ std::string("--> ") + _text);
     }
-    void exitTrace()
-    {
+    void exitTrace() {
         _logger->log(TRC_LEVEL_TRACE,
                      /*std::string(_instances * 2, ' ') + */ std::string("<-- ") + _text);
     }

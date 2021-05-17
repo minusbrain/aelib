@@ -23,10 +23,8 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
-namespace sml
-{
-class Id
-{
+namespace sml {
+class Id {
    public:
     Id(unsigned int id);
     unsigned int getRawId() const;

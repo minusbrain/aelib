@@ -56,8 +56,7 @@ template <class Iter>
 inline Iter consecutive_find(Iter begin, Iter end, std::size_t n)
 */
 
-TEST(ConsecutiveFind, VectorInt_EmptyFindStreakOf5_ReturnEnd)
-{
+TEST(ConsecutiveFind, VectorInt_EmptyFindStreakOf5_ReturnEnd) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{};
 
@@ -66,8 +65,7 @@ TEST(ConsecutiveFind, VectorInt_EmptyFindStreakOf5_ReturnEnd)
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 5), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_EmptyFindStreakOf1_ReturnEnd)
-{
+TEST(ConsecutiveFind, VectorInt_EmptyFindStreakOf1_ReturnEnd) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{};
 
@@ -76,8 +74,7 @@ TEST(ConsecutiveFind, VectorInt_EmptyFindStreakOf1_ReturnEnd)
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 1), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_EmptyFindStreakOf0_ReturnEnd)
-{
+TEST(ConsecutiveFind, VectorInt_EmptyFindStreakOf0_ReturnEnd) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{};
 
@@ -86,8 +83,7 @@ TEST(ConsecutiveFind, VectorInt_EmptyFindStreakOf0_ReturnEnd)
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 0), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_Size1FindStreakOf5_ReturnEnd)
-{
+TEST(ConsecutiveFind, VectorInt_Size1FindStreakOf5_ReturnEnd) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{5};
 
@@ -96,8 +92,7 @@ TEST(ConsecutiveFind, VectorInt_Size1FindStreakOf5_ReturnEnd)
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 5), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_Size1FindStreakOf1_ReturnBegin)
-{
+TEST(ConsecutiveFind, VectorInt_Size1FindStreakOf1_ReturnBegin) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{5};
 
@@ -106,8 +101,7 @@ TEST(ConsecutiveFind, VectorInt_Size1FindStreakOf1_ReturnBegin)
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 1), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_Size1FindStreakOf0_ReturnBegin)
-{
+TEST(ConsecutiveFind, VectorInt_Size1FindStreakOf0_ReturnBegin) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{5};
 
@@ -116,8 +110,7 @@ TEST(ConsecutiveFind, VectorInt_Size1FindStreakOf0_ReturnBegin)
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 0), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_Size5StreakOf5FindStreakOf5_ReturnBegin)
-{
+TEST(ConsecutiveFind, VectorInt_Size5StreakOf5FindStreakOf5_ReturnBegin) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{5, 5, 5, 5, 5};
 
@@ -126,8 +119,7 @@ TEST(ConsecutiveFind, VectorInt_Size5StreakOf5FindStreakOf5_ReturnBegin)
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 5), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_Size5StreakOf4FindStreakOf5_ReturnEnd)
-{
+TEST(ConsecutiveFind, VectorInt_Size5StreakOf4FindStreakOf5_ReturnEnd) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{4, 5, 5, 5, 5};
 
@@ -136,8 +128,7 @@ TEST(ConsecutiveFind, VectorInt_Size5StreakOf4FindStreakOf5_ReturnEnd)
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 5), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_Size6StreakOf4AtStartFindStreakOf4_ReturnBegin)
-{
+TEST(ConsecutiveFind, VectorInt_Size6StreakOf4AtStartFindStreakOf4_ReturnBegin) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{5, 5, 5, 5, 4, 4};
 
@@ -146,8 +137,7 @@ TEST(ConsecutiveFind, VectorInt_Size6StreakOf4AtStartFindStreakOf4_ReturnBegin)
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 4), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_Size6StreakOf4InMidFindStreakOf4_CorrectIterator)
-{
+TEST(ConsecutiveFind, VectorInt_Size6StreakOf4InMidFindStreakOf4_CorrectIterator) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{4, 5, 5, 5, 5, 4};
 
@@ -156,8 +146,7 @@ TEST(ConsecutiveFind, VectorInt_Size6StreakOf4InMidFindStreakOf4_CorrectIterator
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 4), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_Size6StreakOf4AtEndFindStreakOf4_CorrectIterator)
-{
+TEST(ConsecutiveFind, VectorInt_Size6StreakOf4AtEndFindStreakOf4_CorrectIterator) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{4, 4, 5, 5, 5, 5};
 
@@ -166,8 +155,7 @@ TEST(ConsecutiveFind, VectorInt_Size6StreakOf4AtEndFindStreakOf4_CorrectIterator
     EXPECT_EQ(base::consecutive_find(vec.begin(), vec.end(), 4), expected_it);
 }
 
-TEST(ConsecutiveFind, VectorInt_MultipleStreaksOf4FindStreakOf4_FindFirstStreak)
-{
+TEST(ConsecutiveFind, VectorInt_MultipleStreaksOf4FindStreakOf4_FindFirstStreak) {
     //                   0  1  2  3  4  5  6  7, 8, 9
     std::vector<int> vec{0, 4, 4, 4, 4, 7, 5, 5, 5, 5, 0};
 

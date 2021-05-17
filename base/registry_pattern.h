@@ -27,8 +27,7 @@
 #include <map>
 #include <string>
 
-namespace base
-{
+namespace base {
 /**
  * @brief      Registry pattern template
  *
@@ -64,15 +63,13 @@ namespace base
  *                      whatever arguments the CREATORs need
  */
 template <class T, class... PARAMS>
-class Registry
-{
+class Registry {
     typedef std::function<T*(PARAMS...)> Creator;
     typedef std::map<std::string, Creator> Creators;
 
    public:
     // Get singleton instance of Registry<T, CREATOR>
-    static Registry& getInstance()
-    {
+    static Registry& getInstance() {
         static Registry instance;  // Guaranteed to be destroyed.
                                    // Instantiated on first use.
         return instance;
@@ -83,28 +80,22 @@ class Registry
     void operator=(Registry const&) = delete;
 
     // Register a factory function under a given string identifier
-    void registerClass(const std::string& className, const Creator& creator)
-    {
+    void registerClass(const std::string& className, const Creator& creator) {
         // Insert or replace
         _creators[className] = creator;
     }
 
     // Unregister a previously registerd string identifier / factory function
-    void unregisterClass(const std::string& className)
-    {
+    void unregisterClass(const std::string& className) {
         // Erases class with classname. Fails silently in case className not in map
         _creators.erase(className);
     }
 
     // Check if a factory function is registered under the provided string identifier
-    bool isClassRegistered(const std::string& className) const
-    {
-        return getRegisteredCreator(className) != nullptr;
-    }
+    bool isClassRegistered(const std::string& className) const { return getRegisteredCreator(className) != nullptr; }
 
     // Instantiate an object of class identfied by given string identifier
-    T* createObject(const std::string& className, PARAMS... params)
-    {
+    T* createObject(const std::string& className, PARAMS... params) {
         Creator* creator = getRegisteredCreator(className);
 
         return (creator != nullptr) ? (*creator)(params...) : nullptr;
@@ -114,8 +105,7 @@ class Registry
     Registry() {}
     Creators _creators;
 
-    Creator* getRegisteredCreator(const std::string& className)
-    {
+    Creator* getRegisteredCreator(const std::string& className) {
         auto it = _creators.find(className);
         return (it != _creators.end()) ? &(it->second) : nullptr;
     }

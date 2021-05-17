@@ -27,16 +27,12 @@
 #include <algorithm>
 #include <cstdint>
 
-namespace base
-{
+namespace base {
 template <class T>
-class Node
-{
+class Node {
    public:
     Node(Node<T>* parent, T payload)
-        : _parent(parent), _left(nullptr), _right(nullptr), _payload(payload), _height(1)
-    {
-    }
+        : _parent(parent), _left(nullptr), _right(nullptr), _payload(payload), _height(1) {}
 
     Node<T>* getParent() { return _parent; }
 
@@ -44,22 +40,19 @@ class Node
 
     Node<T>* getRightChild() { return _right; }
 
-    void setLeftChild(Node<T>* node)
-    {
+    void setLeftChild(Node<T>* node) {
         _left = node;
         updateHeight();
     }
 
-    void setRightChild(Node<T>* node)
-    {
+    void setRightChild(Node<T>* node) {
         _right = node;
         updateHeight();
     }
 
     void setParent(Node<T>* node) { _parent = node; }
 
-    void updateHeight()
-    {
+    void updateHeight() {
         uint32_t lh = 0;
         uint32_t rh = 0;
         if (_left != nullptr) lh = _left->getHeight();
@@ -70,8 +63,7 @@ class Node
 
     uint32_t getHeight() { return _height; }
 
-    int32_t getBalance()
-    {
+    int32_t getBalance() {
         uint32_t lh = 0;
         uint32_t rh = 0;
         if (_left != nullptr) lh = _left->getHeight();
@@ -100,12 +92,10 @@ class Node
 };
 
 template <class T>
-static Node<T>* getLeftMostNode(Node<T>* old)
-{
+static Node<T>* getLeftMostNode(Node<T>* old) {
     if (old == nullptr) return nullptr;
 
-    while (old->getLeftChild() != nullptr)
-    {
+    while (old->getLeftChild() != nullptr) {
         old = old->getLeftChild();
     }
 
@@ -113,12 +103,10 @@ static Node<T>* getLeftMostNode(Node<T>* old)
 }
 
 template <class T>
-static Node<T>* getRightMostNode(Node<T>* old)
-{
+static Node<T>* getRightMostNode(Node<T>* old) {
     if (old == nullptr) return nullptr;
 
-    while (old->getRightChild() != nullptr)
-    {
+    while (old->getRightChild() != nullptr) {
         old = old->getRightChild();
     }
 

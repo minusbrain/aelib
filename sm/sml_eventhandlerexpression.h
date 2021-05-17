@@ -27,10 +27,8 @@
 
 #include <vector>
 
-namespace sml
-{
-class EventHandlerExpression
-{
+namespace sml {
+class EventHandlerExpression {
    public:
     EventHandlerExpression();
     EventHandlerExpression(const EventHandlerExpression& orig);

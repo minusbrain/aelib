@@ -28,10 +28,8 @@
 #include <functional>
 #include <memory>
 
-namespace sml
-{
-class SimpleGuard : public IGuard
-{
+namespace sml {
+class SimpleGuard : public IGuard {
    public:
     SimpleGuard();
     SimpleGuard(std::function<bool(void)>, bool);

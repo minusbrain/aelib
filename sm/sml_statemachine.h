@@ -34,8 +34,7 @@
 #include <memory>
 #include <string>
 
-namespace sml
-{
+namespace sml {
 static const unsigned int STATE_BM = 0x01000000;
 static const unsigned int ACTION_BM = 0x02000000;
 static const unsigned int EVENT_BM = 0x04000000;
@@ -48,8 +47,7 @@ class State;
 class IAction;
 class IGuard;
 
-class StateMachine
-{
+class StateMachine {
    public:
     virtual ~StateMachine();
 
@@ -95,16 +93,12 @@ class StateMachine
 };
 
 template <class T_If>
-ActionId StateMachine::createInterfaceAction(std::function<void(T_If&)> fctToCall)
-{
+ActionId StateMachine::createInterfaceAction(std::function<void(T_If&)> fctToCall) {
     return createInterfaceActionHelper(new InterfaceAction<T_If>(fctToCall));
 }
 
 template <class T_If>
-GuardId StateMachine::createInterfaceGuard(std::function<bool(T_If&)> fctToCall,
-                                           bool expectedResult)
-{
-    return createInterfaceGuardHelper(
-        new InterfaceGuard<T_If>(fctToCall, expectedResult));
+GuardId StateMachine::createInterfaceGuard(std::function<bool(T_If&)> fctToCall, bool expectedResult) {
+    return createInterfaceGuardHelper(new InterfaceGuard<T_If>(fctToCall, expectedResult));
 }
 }  // namespace sml

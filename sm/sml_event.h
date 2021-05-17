@@ -25,10 +25,8 @@
 #pragma once
 #include <string>
 
-namespace sml
-{
-class Event
-{
+namespace sml {
+class Event {
    public:
     Event();
     Event(const std::string& name);

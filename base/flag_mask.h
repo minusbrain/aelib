@@ -26,8 +26,7 @@
 #include <limits>
 #include <type_traits>
 
-namespace base
-{
+namespace base {
 /**
  * \brief Flagmask for arbritary integer-based types (integers, enums, enum class, ....)
  *
@@ -50,8 +49,7 @@ namespace base
  * \endcode
  */
 template <typename FLAG>
-class flag_mask
-{
+class flag_mask {
    public:
     using BASETYPE = typename std::underlying_type<FLAG>::type;
     /**
@@ -74,8 +72,7 @@ class flag_mask
      * @return     Reference to this flagmask, can be used to chain calls to set, unset,
      *             clear, ...
      */
-    flag_mask& set(const FLAG flag)
-    {
+    flag_mask& set(const FLAG flag) {
         value |= (BASETYPE)flag;
         return *this;
     }
@@ -86,8 +83,7 @@ class flag_mask
      * @return     Reference to this flagmask, can be used to chain calls to set, unset,
      *             clear, ...
      */
-    flag_mask& set_all()
-    {
+    flag_mask& set_all() {
         value = std::numeric_limits<BASETYPE>::max();
         return *this;
     }
@@ -100,8 +96,7 @@ class flag_mask
      * @return     Reference to this flagmask, can be used to chain calls to set, unset,
      *             clear, ...
      */
-    flag_mask& unset(const FLAG flag)
-    {
+    flag_mask& unset(const FLAG flag) {
         value &= ~((BASETYPE)flag);
         return *this;
     }
@@ -112,8 +107,7 @@ class flag_mask
      * @return     Reference to this flagmask, can be used to chain calls to set, unset,
      *             clear, ...
      */
-    flag_mask& clear()
-    {
+    flag_mask& clear() {
         value = 0;
         return *this;
     }
@@ -134,12 +128,9 @@ class flag_mask
      *
      * @return     true if all flags are set, false if one or more are not checked
      */
-    bool check_all(std::initializer_list<const FLAG> flags)
-    {
-        for (auto flag : flags)
-        {
-            if (check(flag) == false)
-            {
+    bool check_all(std::initializer_list<const FLAG> flags) {
+        for (auto flag : flags) {
+            if (check(flag) == false) {
                 return false;
             }
         }

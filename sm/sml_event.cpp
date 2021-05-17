@@ -24,8 +24,7 @@
  */
 #include <sm/sml_event.h>
 
-namespace sml
-{
+namespace sml {
 Event::Event(const std::string& name) : _name(name) {}
 
 Event::Event() : _name("") {}

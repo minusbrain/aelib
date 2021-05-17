@@ -27,8 +27,7 @@
 
 #include <vector>
 
-TEST(FindLast, FindLastInt_Easy_CorrectIterator)
-{
+TEST(FindLast, FindLastInt_Easy_CorrectIterator) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{1, 4, 3, 2, 1, 3, 2, 1};
 
@@ -43,8 +42,7 @@ TEST(FindLast, FindLastInt_Easy_CorrectIterator)
     EXPECT_EQ(base::find_last(vec.begin(), vec.end(), 4), expected_last_4);
 }
 
-TEST(FindLast, FindLastInt_LastOccurenceIsFirst_CorrectIterator)
-{
+TEST(FindLast, FindLastInt_LastOccurenceIsFirst_CorrectIterator) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{5, 4, 3, 2, 1, 3, 2, 1};
 
@@ -53,8 +51,7 @@ TEST(FindLast, FindLastInt_LastOccurenceIsFirst_CorrectIterator)
     EXPECT_EQ(base::find_last(vec.begin(), vec.end(), 5), expected_last);
 }
 
-TEST(FindLast, FindLastInt_LastOccurenceIsLast_CorrectIterator)
-{
+TEST(FindLast, FindLastInt_LastOccurenceIsLast_CorrectIterator) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{1, 4, 3, 2, 1, 3, 2, 5};
 
@@ -63,8 +60,7 @@ TEST(FindLast, FindLastInt_LastOccurenceIsLast_CorrectIterator)
     EXPECT_EQ(base::find_last(vec.begin(), vec.end(), 5), expected_last);
 }
 
-TEST(FindLast, FindLastInt_IntegerDoesNotoccur_EndIterator)
-{
+TEST(FindLast, FindLastInt_IntegerDoesNotoccur_EndIterator) {
     //                   0  1  2  3  4  5  6  7
     std::vector<int> vec{1, 4, 3, 2, 1, 3, 2, 1};
 
@@ -73,8 +69,7 @@ TEST(FindLast, FindLastInt_IntegerDoesNotoccur_EndIterator)
     EXPECT_EQ(base::find_last(vec.begin(), vec.end(), 5), expected_last);
 }
 
-TEST(FindLast, FindLastInt_EmptyRange_EndIterator)
-{
+TEST(FindLast, FindLastInt_EmptyRange_EndIterator) {
     std::vector<int> vec{};
 
     auto expected_last = vec.end();
@@ -84,8 +79,7 @@ TEST(FindLast, FindLastInt_EmptyRange_EndIterator)
 
 // Sequence of set iterators is undefined so we can only check if the
 // content, the iterator points to, is correct
-TEST(FindLast, FindLastInt_UseSet_IteratorShouldPointToCorrectValue)
-{
+TEST(FindLast, FindLastInt_UseSet_IteratorShouldPointToCorrectValue) {
     //                  0  1  2  3  4  5  6  7
     std::set<int> myset{5, 4, 3, 2, 1, 3, 2, 1};
 

@@ -27,8 +27,7 @@
 
 #include "gtest/gtest.h"
 
-TEST(SortedFind, IntegerVector_FindExistingValue_ExpectCorrectIterator)
-{
+TEST(SortedFind, IntegerVector_FindExistingValue_ExpectCorrectIterator) {
     std::vector<int> dut = {1, 2, 3, 4, 5, 6, 7, 8, 9, 89345, 999999};
 
     auto it = base::sorted_find(dut, 5, [](auto lhs, auto rhs) { return lhs < rhs; });
@@ -36,8 +35,7 @@ TEST(SortedFind, IntegerVector_FindExistingValue_ExpectCorrectIterator)
     EXPECT_EQ(5, *it);
 }
 
-TEST(SortedFind, IntegerVector_FindNonExistingValue_ExpectCorrectIterator)
-{
+TEST(SortedFind, IntegerVector_FindNonExistingValue_ExpectCorrectIterator) {
     std::vector<int> dut = {1, 2, 3, 4, 6, 7, 8, 9, 89345, 999999};
 
     auto it = base::sorted_find(dut, 5, [](auto lhs, auto rhs) { return lhs < rhs; });
@@ -45,8 +43,7 @@ TEST(SortedFind, IntegerVector_FindNonExistingValue_ExpectCorrectIterator)
     EXPECT_EQ(dut.end(), it);
 }
 
-TEST(SortedFind, EmptyVector_FindNonExistingValue_ExpectEndIterator)
-{
+TEST(SortedFind, EmptyVector_FindNonExistingValue_ExpectEndIterator) {
     std::vector<int> dut = {};
 
     auto it = base::sorted_find(dut, 5, [](auto lhs, auto rhs) { return lhs < rhs; });
@@ -54,8 +51,7 @@ TEST(SortedFind, EmptyVector_FindNonExistingValue_ExpectEndIterator)
     EXPECT_EQ(dut.end(), it);
 }
 
-TEST(SortedFind, OneItemVector_FindExistingValue_ExpectCorrectIterator)
-{
+TEST(SortedFind, OneItemVector_FindExistingValue_ExpectCorrectIterator) {
     std::vector<int> dut = {5};
 
     auto it = base::sorted_find(dut, 5, [](auto lhs, auto rhs) { return lhs < rhs; });
@@ -63,8 +59,7 @@ TEST(SortedFind, OneItemVector_FindExistingValue_ExpectCorrectIterator)
     EXPECT_EQ(5, *it);
 }
 
-TEST(SortedFind, OneItemVector_FindNonExistingValue_ExpectEndIterator)
-{
+TEST(SortedFind, OneItemVector_FindNonExistingValue_ExpectEndIterator) {
     std::vector<int> dut = {6};
 
     auto it = base::sorted_find(dut, 5, [](auto lhs, auto rhs) { return lhs < rhs; });
@@ -72,8 +67,7 @@ TEST(SortedFind, OneItemVector_FindNonExistingValue_ExpectEndIterator)
     EXPECT_EQ(dut.end(), it);
 }
 
-TEST(SortedFind, LargeVector_FindExistingValue_ExpectCorrectIterator)
-{
+TEST(SortedFind, LargeVector_FindExistingValue_ExpectCorrectIterator) {
     std::vector<int> dut(1000);
     std::generate(dut.begin(), dut.end(),
                   std::rand);  // Using the C function rand()
@@ -87,8 +81,7 @@ TEST(SortedFind, LargeVector_FindExistingValue_ExpectCorrectIterator)
     EXPECT_EQ(3744, *it);
 }
 
-TEST(SortedFind, LargeVector_FindNonExistingValue_ExpectEndIterator)
-{
+TEST(SortedFind, LargeVector_FindNonExistingValue_ExpectEndIterator) {
     std::vector<int> dut(1000);
     std::generate(dut.begin(), dut.end(),
                   std::rand);  // Using the C function rand()

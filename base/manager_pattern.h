@@ -26,8 +26,7 @@
 #include <map>
 #include <memory>
 
-namespace base
-{
+namespace base {
 /**
  * @brief      Container that manages instances of a base class
  *
@@ -36,14 +35,12 @@ namespace base
  * by an ID type that has to support operator< comparison.
  */
 template <class T, class ID>
-class Manager
-{
+class Manager {
    public:
     using MapType = std::map<ID, std::shared_ptr<T>>;
 
     // Get singleton instance of MemoryManager<T>
-    static Manager& getInstance()
-    {
+    static Manager& getInstance() {
         static Manager instance;  // Guaranteed to be destroyed.
                                   // Instantiated on first use.
         return instance;
@@ -53,8 +50,7 @@ class Manager
     Manager(Manager const&) = delete;
     void operator=(Manager const&) = delete;
 
-    bool addObject(const ID& id, T* obj)
-    {
+    bool addObject(const ID& id, T* obj) {
         if (containsObject(id)) return false;
         return _map.emplace(std::make_pair(id, std::shared_ptr<T>(obj))).second;
     }
@@ -63,8 +59,7 @@ class Manager
 
     bool containsObject(const ID& id) { return _map.find(id) != _map.end(); }
 
-    std::shared_ptr<T> getObject(const ID& id)
-    {
+    std::shared_ptr<T> getObject(const ID& id) {
         auto ref = _map.find(id);
         return ref != _map.end() ? (*ref).second : nullptr;
     }

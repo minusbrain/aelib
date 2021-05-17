@@ -26,12 +26,9 @@
 #include <algorithm>
 #include <cstdlib>
 
-namespace base
-{
+namespace base {
 template <class Iterator, typename Value, class Compare>
-Iterator __sorted_find_helper(Iterator from, Iterator to, const Iterator end,
-                              const Value& value, Compare comp)
-{
+Iterator __sorted_find_helper(Iterator from, Iterator to, const Iterator end, const Value& value, Compare comp) {
     // If from points to searched value, return from
     if (!comp(*from, value) && !comp(value, *from)) return from;
     // If remaining search area is empty return end
@@ -40,12 +37,9 @@ Iterator __sorted_find_helper(Iterator from, Iterator to, const Iterator end,
     size_t half_dist = std::distance(from, to) / 2;
 
     // For small remaining search scope optimize by linear search
-    if (half_dist < 5)
-    {
-        while (from <= to)
-        {
-            if (comp(*from, value))
-            {
+    if (half_dist < 5) {
+        while (from <= to) {
+            if (comp(*from, value)) {
                 from += 1;
                 continue;
             }
@@ -54,12 +48,9 @@ Iterator __sorted_find_helper(Iterator from, Iterator to, const Iterator end,
         }
     }
     // Else search appropriate upper or lower half of remaining search scope
-    else if (comp(value, *(from + half_dist)) == true)
-    {
+    else if (comp(value, *(from + half_dist)) == true) {
         return __sorted_find_helper(from, from + half_dist, end, value, comp);
-    }
-    else
-    {
+    } else {
         return __sorted_find_helper(from + half_dist, to, end, value, comp);
     }
     return end;  // Never reached code
@@ -82,9 +73,7 @@ Iterator __sorted_find_helper(Iterator from, Iterator to, const Iterator end,
  *             value. It is undefined which of the instances this is.
  */
 template <class Container, typename Value, class Compare>
-typename Container::const_iterator sorted_find(const Container& cont, const Value& value,
-                                               Compare comp)
-{
+typename Container::const_iterator sorted_find(const Container& cont, const Value& value, Compare comp) {
     auto begin = cont.cbegin();
     auto end = cont.cend();
     // In case the container is empty or the value is before the first entry

@@ -26,11 +26,9 @@
 
 #include "node.h"
 
-namespace base
-{
+namespace base {
 template <class T>
-class TreeHelper
-{
+class TreeHelper {
    public:
     /* What is done:
      *  Situation before ...
@@ -50,8 +48,7 @@ class TreeHelper
      * root must be a right heavy subtree with an existing
      * right child (must not be null!!!)
      */
-    static Node<T>* leftRotateSubtree(Node<T>* root)
-    {
+    static Node<T>* leftRotateSubtree(Node<T>* root) {
         Node<T>* r1 = root->getRightChild();
         Node<T>* rl2 = r1->getLeftChild();
         if (rl2 != nullptr) rl2->setParent(root);
@@ -87,8 +84,7 @@ class TreeHelper
      * root must be a left heavy subtree with an existing
      * left child (must not be null!!!)
      */
-    static Node<T>* rightRotateSubtree(Node<T>* root)
-    {
+    static Node<T>* rightRotateSubtree(Node<T>* root) {
         Node<T>* l1 = root->getLeftChild();
         Node<T>* lr2 = l1->getRightChild();
         if (lr2 != nullptr) lr2->setParent(root);
@@ -110,8 +106,7 @@ class TreeHelper
     // root must be a right heavy subtree with an existing
     // right child (must not be null!!!) which is left heavy
     // and must have an existing left child
-    static Node<T>* leftRightRotateSubtree(Node<T>* root)
-    {
+    static Node<T>* leftRightRotateSubtree(Node<T>* root) {
         Node<T>* newRoot = root->getRightChild();
         newRoot = rightRotateSubtree(newRoot);
         if (newRoot != nullptr) newRoot->setParent(root);
@@ -123,8 +118,7 @@ class TreeHelper
     // root must be a left heavy subtree with an existing
     // left child (must not be null!!!) which is right heavy
     // and must have an existing right child
-    static Node<T>* rightLeftRotateSubtree(Node<T>* root)
-    {
+    static Node<T>* rightLeftRotateSubtree(Node<T>* root) {
         Node<T>* newRoot = root->getLeftChild();
         newRoot = leftRotateSubtree(newRoot);
         if (newRoot != nullptr) newRoot->setParent(root);
@@ -132,8 +126,7 @@ class TreeHelper
         return rightRotateSubtree(root);
     }
 
-    static void recursiveDestroyNode(Node<T>* node)
-    {
+    static void recursiveDestroyNode(Node<T>* node) {
         if (node == nullptr) return;
 
         recursiveDestroyNode(node->getLeftChild());

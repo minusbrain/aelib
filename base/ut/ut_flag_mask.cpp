@@ -26,38 +26,25 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-enum class Simple : uint32_t
-{
-    a = 0x01,
-    b = 0x02,
-    c = 0x80000000
-};
+enum class Simple : uint32_t { a = 0x01, b = 0x02, c = 0x80000000 };
 
-enum class SimpleChar : char
-{
-    a = 0x01,
-    b = 0x02,
-    c = 0x40
-};
+enum class SimpleChar : char { a = 0x01, b = 0x02, c = 0x40 };
 
-TEST(flag_mask, CreateSimpleFM_CheckAllAreUnset_ExpectUnset)
-{
+TEST(flag_mask, CreateSimpleFM_CheckAllAreUnset_ExpectUnset) {
     base::flag_mask<Simple> mask;
     EXPECT_FALSE(mask.check(Simple::a));
     EXPECT_FALSE(mask.check(Simple::b));
     EXPECT_FALSE(mask.check(Simple::c));
 }
 
-TEST(flag_mask, CreatePreinitSimpleFM_CheckSetStatus_ExpectOnlyCorrectFlagsSet)
-{
+TEST(flag_mask, CreatePreinitSimpleFM_CheckSetStatus_ExpectOnlyCorrectFlagsSet) {
     base::flag_mask<Simple> mask(0x80000001);
     EXPECT_TRUE(mask.check(Simple::a));
     EXPECT_FALSE(mask.check(Simple::b));
     EXPECT_TRUE(mask.check(Simple::c));
 }
 
-TEST(flag_mask, AddFlagToFM_CheckSetStatus_ExpectOnlyCorrectFlagSet)
-{
+TEST(flag_mask, AddFlagToFM_CheckSetStatus_ExpectOnlyCorrectFlagSet) {
     base::flag_mask<Simple> mask;
     mask.set(Simple::b);
     EXPECT_FALSE(mask.check(Simple::a));
@@ -65,8 +52,7 @@ TEST(flag_mask, AddFlagToFM_CheckSetStatus_ExpectOnlyCorrectFlagSet)
     EXPECT_FALSE(mask.check(Simple::c));
 }
 
-TEST(flag_mask, CreatePreinitSimpleFM_UnsetFlagAndCheckSetStatus_ExpectOnlyCorrectFlagSet)
-{
+TEST(flag_mask, CreatePreinitSimpleFM_UnsetFlagAndCheckSetStatus_ExpectOnlyCorrectFlagSet) {
     base::flag_mask<Simple> mask(0x80000001);
     mask.unset(Simple::a);
     EXPECT_FALSE(mask.check(Simple::a));
@@ -74,8 +60,7 @@ TEST(flag_mask, CreatePreinitSimpleFM_UnsetFlagAndCheckSetStatus_ExpectOnlyCorre
     EXPECT_TRUE(mask.check(Simple::c));
 }
 
-TEST(flag_mask, CreatePreinitSimpleFM_ClearAndCheck_ExpectUnset)
-{
+TEST(flag_mask, CreatePreinitSimpleFM_ClearAndCheck_ExpectUnset) {
     base::flag_mask<Simple> mask(0x80000001);
     mask.clear();
     EXPECT_FALSE(mask.check(Simple::a));
@@ -83,8 +68,7 @@ TEST(flag_mask, CreatePreinitSimpleFM_ClearAndCheck_ExpectUnset)
     EXPECT_FALSE(mask.check(Simple::c));
 }
 
-TEST(flag_mask, CreatePreinitSimpleFM_ClearSetSetUnsetAndCheck_ExpectOnlyCorrectFlagSet)
-{
+TEST(flag_mask, CreatePreinitSimpleFM_ClearSetSetUnsetAndCheck_ExpectOnlyCorrectFlagSet) {
     base::flag_mask<Simple> mask(0x80000001);
     mask.clear().set(Simple::b).set(Simple::a).unset(Simple::b);
     EXPECT_TRUE(mask.check(Simple::a));
@@ -92,8 +76,7 @@ TEST(flag_mask, CreatePreinitSimpleFM_ClearSetSetUnsetAndCheck_ExpectOnlyCorrect
     EXPECT_FALSE(mask.check(Simple::c));
 }
 
-TEST(flag_mask, CreateSimpleFM_SetAllUnsetOne_ExpectOnlyCorrectFlagSet)
-{
+TEST(flag_mask, CreateSimpleFM_SetAllUnsetOne_ExpectOnlyCorrectFlagSet) {
     base::flag_mask<Simple> mask;
     mask.set_all().unset(Simple::b);
     EXPECT_TRUE(mask.check(Simple::a));
@@ -101,16 +84,14 @@ TEST(flag_mask, CreateSimpleFM_SetAllUnsetOne_ExpectOnlyCorrectFlagSet)
     EXPECT_TRUE(mask.check(Simple::c));
 }
 
-TEST(flag_mask, CreateSimpleFM_AddTwoFlagsCheckAllSetFlags_ExpectAllFlagsSet)
-{
+TEST(flag_mask, CreateSimpleFM_AddTwoFlagsCheckAllSetFlags_ExpectAllFlagsSet) {
     base::flag_mask<Simple> mask;
     mask.set(Simple::c).set(Simple::a);
     EXPECT_TRUE(mask.check_all({Simple::a, Simple::c}));
     EXPECT_FALSE(mask.check_all({Simple::a, Simple::b}));
 }
 
-TEST(flag_mask, CreatePreinitSimpleCharFM_TestAllFunctions_ExpectOnlyCorrectFlagSet)
-{
+TEST(flag_mask, CreatePreinitSimpleCharFM_TestAllFunctions_ExpectOnlyCorrectFlagSet) {
     base::flag_mask<SimpleChar> mask(0x41);
     mask.clear().set(SimpleChar::b).set(SimpleChar::a).unset(SimpleChar::b);
     EXPECT_TRUE(mask.check(SimpleChar::a));
@@ -118,8 +99,7 @@ TEST(flag_mask, CreatePreinitSimpleCharFM_TestAllFunctions_ExpectOnlyCorrectFlag
     EXPECT_FALSE(mask.check(SimpleChar::c));
 }
 
-TEST(flag_mask, CreatePreinitSimpleCharFM_Check_ExpectOnlyCorrectFlagSet)
-{
+TEST(flag_mask, CreatePreinitSimpleCharFM_Check_ExpectOnlyCorrectFlagSet) {
     base::flag_mask<SimpleChar> mask(0x41);
     EXPECT_TRUE(mask.check(SimpleChar::a));
     EXPECT_FALSE(mask.check(SimpleChar::b));

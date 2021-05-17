@@ -30,11 +30,9 @@
 #include <string>
 #include <vector>
 
-namespace sml
-{
+namespace sml {
 class IStateMachineInstance;
-class State
-{
+class State {
    public:
     State();
     State(const std::string&);

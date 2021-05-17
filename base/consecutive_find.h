@@ -27,8 +27,7 @@
 #include <cstddef>
 #include <iterator>
 
-namespace base
-{
+namespace base {
 /**
  * \brief Find the first occurrence of 'n' consecutive equal values in range
  *
@@ -56,19 +55,15 @@ namespace base
  *            'n == 0 || n == 1' 'first' is returned.
  */
 template <class Iter>
-inline Iter consecutive_find(Iter first, Iter last, std::size_t n)
-{
+inline Iter consecutive_find(Iter first, Iter last, std::size_t n) {
     std::size_t count(1);
     Iter marker, lead;
 
-    for (marker = lead = first; lead != last; marker = lead, count = 1)
-    {
-        for (lead = std::next(marker); (lead != last) && (*marker == *lead);
-             ++count, ++lead)
+    for (marker = lead = first; lead != last; marker = lead, count = 1) {
+        for (lead = std::next(marker); (lead != last) && (*marker == *lead); ++count, ++lead)
             ;
 
-        if (count >= n)
-        {
+        if (count >= n) {
             return marker;
         }
     }

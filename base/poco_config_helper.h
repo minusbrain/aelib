@@ -29,23 +29,19 @@
 
 using Poco::Util::AbstractConfiguration;
 
-namespace base
-{
-inline void pocoPrintConfig(const AbstractConfiguration& cfg, const std::string& key)
-{
+namespace base {
+inline void pocoPrintConfig(const AbstractConfiguration& cfg, const std::string& key) {
     std::vector<std::string> subkeys;
 
     cfg.keys(key, subkeys);
 
     std::string value;
-    if (cfg.has(key))
-    {
+    if (cfg.has(key)) {
         value = cfg.getRawString(key, value);
         std::cout << key << " " << value << "\n";
     }
 
-    for (auto subkey : subkeys)
-    {
+    for (auto subkey : subkeys) {
         if (key != "") subkey = key + "." + subkey;
         pocoPrintConfig(cfg, subkey);
     }

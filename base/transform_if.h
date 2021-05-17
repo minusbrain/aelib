@@ -24,8 +24,7 @@
  */
 #pragma once
 
-namespace base
-{
+namespace base {
 /**
  * \brief Conditionally transform each element of an input range to an output container
  *
@@ -60,13 +59,9 @@ namespace base
  *            container
  */
 template <class InIter, class OutIter, class Trans, class Pred>
-inline OutIter transform_if(InIter first, InIter last, OutIter out, Trans transFunc,
-                            Pred predFunc)
-{
-    for (; first != last; ++first)
-    {
-        if (predFunc(*first))
-        {
+inline OutIter transform_if(InIter first, InIter last, OutIter out, Trans transFunc, Pred predFunc) {
+    for (; first != last; ++first) {
+        if (predFunc(*first)) {
             *out = transFunc(*first);
         }
     }

@@ -27,8 +27,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-class IMyObserver
-{
+class IMyObserver {
    public:
     virtual void eventA(int param) = 0;
     virtual void eventB(int param) = 0;
@@ -36,21 +35,17 @@ class IMyObserver
     virtual ~IMyObserver() {}
 };
 
-class MySubject : public base::Subject<IMyObserver>
-{
+class MySubject : public base::Subject<IMyObserver> {
    public:
     MySubject() : base::Subject<IMyObserver>() {}
     ~MySubject() {}
-    void notifyEventA(int /*param*/)
-    { /*observers.eventA(param);*/
+    void notifyEventA(int /*param*/) { /*observers.eventA(param);*/
     }
-    void notifyEventB(int /*param*/)
-    { /*observers.eventB(param);*/
+    void notifyEventB(int /*param*/) { /*observers.eventB(param);*/
     }
 };
 
-class MyObserver : public IMyObserver
-{
+class MyObserver : public IMyObserver {
    public:
     MyObserver() : IMyObserver() {}
     virtual void eventA(int /*param*/) {}
@@ -59,8 +54,7 @@ class MyObserver : public IMyObserver
     virtual ~MyObserver() {}
 };
 
-class MyMockObserver : public MyObserver
-{
+class MyMockObserver : public MyObserver {
    public:
     MyMockObserver() : MyObserver() {}
     MOCK_METHOD1(eventA, void(int));
@@ -69,8 +63,7 @@ class MyMockObserver : public MyObserver
     virtual ~MyMockObserver() {}
 };
 
-TEST(ObserverPattern, OneObserver_notifyEvent_expectCallToObserver)
-{
+TEST(ObserverPattern, OneObserver_notifyEvent_expectCallToObserver) {
     /*    MySubject subject;
         auto observer1 = new MyMockObserver();
         // auto observer2 = new MyMockObserver();

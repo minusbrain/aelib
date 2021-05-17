@@ -27,10 +27,8 @@
 
 #include <functional>
 
-namespace sml
-{
-class SimpleAction : public IAction
-{
+namespace sml {
+class SimpleAction : public IAction {
    public:
     SimpleAction();
     SimpleAction(std::function<void(void)>);

@@ -24,8 +24,7 @@
  */
 #pragma once
 
-namespace base
-{
+namespace base {
 /**
  * \brief Find the last occurrence of value in range
  *
@@ -46,15 +45,12 @@ namespace base
  *            occur in range 'last' is returned.
  */
 template <class Iter, class T>
-inline Iter find_last(Iter first, Iter last, const T& val)
-{
+inline Iter find_last(Iter first, Iter last, const T& val) {
     Iter lastfound(last);
     Iter current(first);
 
-    while (current != last)
-    {
-        if (*current == val)
-        {
+    while (current != last) {
+        if (*current == val) {
             lastfound = current;
         }
         ++current;

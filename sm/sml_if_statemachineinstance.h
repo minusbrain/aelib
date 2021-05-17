@@ -29,13 +29,11 @@
 #include <string>
 #include <vector>
 
-namespace sml
-{
+namespace sml {
 class IAction;
 class IGuard;
 
-class IStateMachineInstance
-{
+class IStateMachineInstance {
    public:
     virtual ~IStateMachineInstance(){};
 

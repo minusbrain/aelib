@@ -28,8 +28,7 @@
 #include <memory>
 #include <ratio>
 
-namespace base
-{
+namespace base {
 /**
  * \brief Returns the map-entry for provided key or nullptr if key does not
  * exist
@@ -39,8 +38,7 @@ namespace base
  * \return    Either a pointer to the item if key exists or a nullptr
  */
 template <class T_key, class T_entry>
-T_entry* mapentry_or_null(const std::map<T_key, T_entry*>& container, T_key key)
-{
+T_entry* mapentry_or_null(const std::map<T_key, T_entry*>& container, T_key key) {
     auto ret = container.find(key);
     return (ret == container.end()) ? nullptr : ret->second;
 }
@@ -54,9 +52,7 @@ T_entry* mapentry_or_null(const std::map<T_key, T_entry*>& container, T_key key)
  * \return    Either a pointer to the item if key exists or a nullptr
  */
 template <class T_key, class T_entry>
-T_entry* mapentry_or_null(const std::map<T_key, std::unique_ptr<T_entry>>& container,
-                          T_key key)
-{
+T_entry* mapentry_or_null(const std::map<T_key, std::unique_ptr<T_entry>>& container, T_key key) {
     auto ret = container.find(key);
     return (ret == container.end()) ? nullptr : ret->second.get();
 }

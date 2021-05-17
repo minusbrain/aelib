@@ -24,10 +24,8 @@
  */
 #pragma once
 
-namespace sml
-{
-class IGuard
-{
+namespace sml {
+class IGuard {
    public:
     virtual ~IGuard(){};
 

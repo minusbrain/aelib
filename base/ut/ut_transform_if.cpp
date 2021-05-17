@@ -35,53 +35,44 @@ auto transFloatHalf = [](int in) -> double { return in / 2.0; };
 auto predIfEven = [](int in) -> bool { return (in % 2) == 0; };
 auto predIfOdd = [](int in) -> bool { return (in % 2) == 1; };
 
-TEST(TransformIf, TransformIntVector_EasyVectorHalfEveryEvenInteger_CorrectResultVector)
-{
+TEST(TransformIf, TransformIntVector_EasyVectorHalfEveryEvenInteger_CorrectResultVector) {
     //                     0  1  2  3  4  5  6  7
     std::vector<int> vecIn{1, 4, 3, 2, 1, 8, 2, 1};
     std::vector<int> vecOut{};
 
-    base::transform_if(vecIn.begin(), vecIn.end(), std::back_inserter(vecOut),
-                       transIntHalf, predIfEven);
+    base::transform_if(vecIn.begin(), vecIn.end(), std::back_inserter(vecOut), transIntHalf, predIfEven);
 
     EXPECT_THAT(vecOut, ElementsAre(2, 1, 4, 1));
 }
 
-TEST(TransformIf, TransformIntVector_EmptyVectorHalfEveryEvenInteger_EmptyResultVector)
-{
+TEST(TransformIf, TransformIntVector_EmptyVectorHalfEveryEvenInteger_EmptyResultVector) {
     //                     0  1  2  3  4  5  6  7
     std::vector<int> vecIn{};
     std::vector<int> vecOut{};
 
-    base::transform_if(vecIn.begin(), vecIn.end(), std::back_inserter(vecOut),
-                       transIntHalf, predIfEven);
+    base::transform_if(vecIn.begin(), vecIn.end(), std::back_inserter(vecOut), transIntHalf, predIfEven);
 
     EXPECT_EQ(vecOut.size(), 0);
     EXPECT_THAT(vecOut, ElementsAre());
 }
 
-TEST(TransformIf, TransformIntVector_OddOnlyVectorHalfEveryEvenInteger_EmptyResultVector)
-{
+TEST(TransformIf, TransformIntVector_OddOnlyVectorHalfEveryEvenInteger_EmptyResultVector) {
     //                     0  1  2  3  4  5  6  7
     std::vector<int> vecIn{1, 9, 3, 7, 1, 3, 5, 1};
     std::vector<int> vecOut{};
 
-    base::transform_if(vecIn.begin(), vecIn.end(), std::back_inserter(vecOut),
-                       transIntHalf, predIfEven);
+    base::transform_if(vecIn.begin(), vecIn.end(), std::back_inserter(vecOut), transIntHalf, predIfEven);
 
     EXPECT_EQ(vecOut.size(), 0);
     EXPECT_THAT(vecOut, ElementsAre());
 }
 
-TEST(TransformIf,
-     TransformIntVector_EasyIntVectorHalfEveryOddIntegerToDouble_CorrectResultVector)
-{
+TEST(TransformIf, TransformIntVector_EasyIntVectorHalfEveryOddIntegerToDouble_CorrectResultVector) {
     //                     0  1  2  3  4  5  6  7
     std::vector<int> vecIn{1, 4, 3, 2, 1, 8, 2, 1};
     std::vector<double> vecOut{};
 
-    base::transform_if(vecIn.begin(), vecIn.end(), std::back_inserter(vecOut),
-                       transFloatHalf, predIfOdd);
+    base::transform_if(vecIn.begin(), vecIn.end(), std::back_inserter(vecOut), transFloatHalf, predIfOdd);
 
     EXPECT_THAT(vecOut, ElementsAre(0.5, 1.5, 0.5, 0.5));
 }

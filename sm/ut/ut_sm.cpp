@@ -30,16 +30,12 @@
 using ::testing::Return;
 using ::testing::Sequence;
 
-UTStatemachine::UTStatemachine()
-    : sm(sml::StateMachine::create("StateMachine")), strict_actions(), nice_actions()
-{
-}
+UTStatemachine::UTStatemachine() : sm(sml::StateMachine::create("StateMachine")), strict_actions(), nice_actions() {}
 UTStatemachine::~UTStatemachine() {}
 void UTStatemachine::SetUp() {}
 void UTStatemachine::TearDown() {}
 
-TEST_F(UTStatemachine, InitialState_SetInitialState1_CorrectState)
-{
+TEST_F(UTStatemachine, InitialState_SetInitialState1_CorrectState) {
     auto SM_STATE_1 = sm.createState("State 1");
     sm.setInitState(SM_STATE_1);
 
@@ -47,8 +43,7 @@ TEST_F(UTStatemachine, InitialState_SetInitialState1_CorrectState)
     ASSERT_EQ("State 1", smi.getCurrentStatename());
 }
 
-TEST_F(UTStatemachine, InitialState_SetInitialState2_CorrectState)
-{
+TEST_F(UTStatemachine, InitialState_SetInitialState2_CorrectState) {
     auto SM_STATE_2 = sm.createState("State 2");
     sm.setInitState(SM_STATE_2);
 
@@ -56,8 +51,7 @@ TEST_F(UTStatemachine, InitialState_SetInitialState2_CorrectState)
     ASSERT_EQ("State 2", smi.getCurrentStatename());
 }
 
-TEST_F(UTStatemachine, InitialState_SendEventForTransition_CorrectNewState)
-{
+TEST_F(UTStatemachine, InitialState_SendEventForTransition_CorrectNewState) {
     auto SM_STATE_1 = sm.createState("State 1");
     auto SM_STATE_2 = sm.createState("State 2");
     sm.setInitState(SM_STATE_1);
@@ -70,8 +64,7 @@ TEST_F(UTStatemachine, InitialState_SendEventForTransition_CorrectNewState)
     ASSERT_EQ("State 2", smi.getCurrentStatename());
 }
 
-TEST_F(UTStatemachine, InitialState_SendEventForTransition_ExitAction)
-{
+TEST_F(UTStatemachine, InitialState_SendEventForTransition_ExitAction) {
     auto SM_STATE_1 = sm.createState("State 1");
     auto SM_STATE_2 = sm.createState("State 2");
     sm.setInitState(SM_STATE_1);
@@ -87,8 +80,7 @@ TEST_F(UTStatemachine, InitialState_SendEventForTransition_ExitAction)
     smi.onEvent(SM_EVENT_1);
 }
 
-TEST_F(UTStatemachine, InitialState_SendEventForTransition_EntryAction)
-{
+TEST_F(UTStatemachine, InitialState_SendEventForTransition_EntryAction) {
     auto SM_STATE_1 = sm.createState("State 1");
     auto SM_STATE_2 = sm.createState("State 2");
     sm.setInitState(SM_STATE_1);
@@ -104,9 +96,7 @@ TEST_F(UTStatemachine, InitialState_SendEventForTransition_EntryAction)
     smi.onEvent(SM_EVENT_1);
 }
 
-TEST_F(UTStatemachine,
-       InitialState_SendEventForTransition_CorrectSequenceOfExitAndEntryActions)
-{
+TEST_F(UTStatemachine, InitialState_SendEventForTransition_CorrectSequenceOfExitAndEntryActions) {
     Sequence s1;
     auto SM_STATE_1 = sm.createState("State 1");
     auto SM_STATE_2 = sm.createState("State 2");
@@ -130,9 +120,7 @@ TEST_F(UTStatemachine,
     smi.onEvent(SM_EVENT_1);
 }
 
-TEST_F(UTStatemachine,
-       InitialState_SendEventForTransitionAndAction_CorrectNewStateAndAction)
-{
+TEST_F(UTStatemachine, InitialState_SendEventForTransitionAndAction_CorrectNewStateAndAction) {
     auto SM_STATE_1 = sm.createState("State 1");
     auto SM_STATE_2 = sm.createState("State 2");
     sm.setInitState(SM_STATE_1);
@@ -146,9 +134,7 @@ TEST_F(UTStatemachine,
     ASSERT_EQ("State 2", smi.getCurrentStatename());
 }
 
-TEST_F(UTStatemachine,
-       InitialState_SendEventForTransitionAndAction_CorrectSequenceOfActions)
-{
+TEST_F(UTStatemachine, InitialState_SendEventForTransitionAndAction_CorrectSequenceOfActions) {
     Sequence s1;
     auto SM_STATE_1 = sm.createState("State 1");
     auto SM_STATE_2 = sm.createState("State 2");
@@ -168,18 +154,14 @@ TEST_F(UTStatemachine,
     smi.onEvent(SM_EVENT_1);
 }
 
-TEST_F(
-    UTStatemachine,
-    InterfaceActionCall_SendEventForTransitionAndAction_OnlyCorrectActionAtCorrectInterface)
-{
+TEST_F(UTStatemachine, InterfaceActionCall_SendEventForTransitionAndAction_OnlyCorrectActionAtCorrectInterface) {
     auto SM_STATE_1 = sm.createState("State 1");
     auto SM_STATE_2 = sm.createState("State 2");
     sm.setInitState(SM_STATE_1);
 
     auto SM_EVENT_1 = sm.createEvent("Event 1");
 
-    auto SM_ACTION_1 =
-        sm.createInterfaceAction<ActionMock>(std::mem_fn(&ActionMock::action1));
+    auto SM_ACTION_1 = sm.createInterfaceAction<ActionMock>(std::mem_fn(&ActionMock::action1));
 
     sm.assignEvent(SM_STATE_1, SM_EVENT_1 >> SM_STATE_2 >> SM_ACTION_1);
 
@@ -191,16 +173,12 @@ TEST_F(
     smi1.onEvent(SM_EVENT_1);
 }
 
-TEST_F(
-    UTStatemachine,
-    InterfaceGuardCall_SendEventForGuardProtectedTransition_GuardCallAndCorrectPostState)
-{
+TEST_F(UTStatemachine, InterfaceGuardCall_SendEventForGuardProtectedTransition_GuardCallAndCorrectPostState) {
     auto SM_STATE_1 = sm.createState("State 1");
     auto SM_STATE_2 = sm.createState("State 2");
     sm.setInitState(SM_STATE_1);
     auto SM_EVENT_1 = sm.createEvent("Event 1");
-    auto SM_GUARD_1 =
-        sm.createInterfaceGuard<ActionMock>(std::mem_fn(&ActionMock::guard1), true);
+    auto SM_GUARD_1 = sm.createInterfaceGuard<ActionMock>(std::mem_fn(&ActionMock::guard1), true);
     sm.assignEvent(SM_STATE_1, SM_EVENT_1 >> SM_GUARD_1 >> SM_STATE_2);
 
     auto smi1 = sml::StateMachineInstance<ActionMock>::create(sm, &nice_actions);
@@ -211,16 +189,12 @@ TEST_F(
     EXPECT_EQ(std::string("State 2"), smi1.getCurrentStatename());
 }
 
-TEST_F(
-    UTStatemachine,
-    InterfaceGuardCall_SendEventForFailingGuardProtectedTransition_GuardCallAndNoStateChange)
-{
+TEST_F(UTStatemachine, InterfaceGuardCall_SendEventForFailingGuardProtectedTransition_GuardCallAndNoStateChange) {
     auto SM_STATE_1 = sm.createState("State 1");
     auto SM_STATE_2 = sm.createState("State 2");
     sm.setInitState(SM_STATE_1);
     auto SM_EVENT_1 = sm.createEvent("Event 1");
-    auto SM_GUARD_1 =
-        sm.createInterfaceGuard<ActionMock>(std::mem_fn(&ActionMock::guard1), true);
+    auto SM_GUARD_1 = sm.createInterfaceGuard<ActionMock>(std::mem_fn(&ActionMock::guard1), true);
     sm.assignEvent(SM_STATE_1, SM_EVENT_1 >> SM_GUARD_1 >> SM_STATE_2);
 
     auto smi1 = sml::StateMachineInstance<ActionMock>::create(sm, &nice_actions);

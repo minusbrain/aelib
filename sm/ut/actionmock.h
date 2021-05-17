@@ -24,8 +24,7 @@
  */
 #pragma once
 
-class ActionMock
-{
+class ActionMock {
    public:
     MOCK_METHOD0(action1, void());
     MOCK_METHOD0(action2, void());

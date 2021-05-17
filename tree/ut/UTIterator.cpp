@@ -46,15 +46,13 @@
 
 const int NUM_OF_NODES = 1000;
 
-TEST(UT004Iterator, InsertOneItem_beginIterator_NotEqualToEnd)
-{
+TEST(UT004Iterator, InsertOneItem_beginIterator_NotEqualToEnd) {
     base::Tree<int> tree;
     tree.insert(32987);
     ASSERT_TRUE(tree.begin() != tree.end());
 }
 
-TEST(UT004Iterator, InsertOneItem_beginIteratorIncrementOnce_EqualToEnd)
-{
+TEST(UT004Iterator, InsertOneItem_beginIteratorIncrementOnce_EqualToEnd) {
     base::Tree<int> tree;
     tree.insert(32987);
     auto it = tree.begin();
@@ -62,90 +60,71 @@ TEST(UT004Iterator, InsertOneItem_beginIteratorIncrementOnce_EqualToEnd)
     ASSERT_TRUE(it == tree.end());
 }
 
-TEST(UT004Iterator, InsertTenUnsortedItems_PreIncrement_CorrectTenSortedIntsReturned)
-{
+TEST(UT004Iterator, InsertTenUnsortedItems_PreIncrement_CorrectTenSortedIntsReturned) {
     base::Tree<int> tree;
     std::vector<int> ascending;
 
-    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i)
-    {
+    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i) {
         tree.insert(TEST_UNSORTED_INTS[i]);
     }
-    for (base::Tree<int>::iterator it = tree.begin(); it != tree.end(); ++it)
-    {
+    for (base::Tree<int>::iterator it = tree.begin(); it != tree.end(); ++it) {
         ascending.push_back((int)*it);
     }
 
-    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i)
-    {
+    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i) {
         ASSERT_EQ(TEST_ASCENDING_INTS[i], ascending[i]);
     }
 }
 
-TEST(UT004Iterator,
-     DescendingTree_InsertTenUnsortedItems_PreIncrement_CorrectTenSortedIntsReturned)
-{
+TEST(UT004Iterator, DescendingTree_InsertTenUnsortedItems_PreIncrement_CorrectTenSortedIntsReturned) {
     base::Tree<int> tree([](int i, int j) -> bool { return i > j; });
     std::vector<int> ascending;
 
-    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i)
-    {
+    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i) {
         tree.insert(TEST_UNSORTED_INTS[i]);
     }
-    for (base::Tree<int>::iterator it = tree.begin(); it != tree.end(); ++it)
-    {
+    for (base::Tree<int>::iterator it = tree.begin(); it != tree.end(); ++it) {
         ascending.push_back((int)*it);
     }
 
-    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i)
-    {
+    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i) {
         ASSERT_EQ(TEST_DESCENDING_INTS[i], ascending[i]);
     }
 }
 
-TEST(UT004Iterator, InsertTenUnsortedItems_PostIncrement_CorrectTenSortedIntsReturned)
-{
+TEST(UT004Iterator, InsertTenUnsortedItems_PostIncrement_CorrectTenSortedIntsReturned) {
     base::Tree<int> tree;
     std::vector<int> ascending;
 
-    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i)
-    {
+    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i) {
         tree.insert(TEST_UNSORTED_INTS[i]);
     }
-    for (base::Tree<int>::iterator it = tree.begin(); it != tree.end(); it++)
-    {
+    for (base::Tree<int>::iterator it = tree.begin(); it != tree.end(); it++) {
         ascending.push_back((int)*it);
     }
 
-    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i)
-    {
+    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i) {
         ASSERT_EQ(TEST_ASCENDING_INTS[i], ascending[i]);
     }
 }
 
-TEST(UT004Iterator,
-     DescendingTree_InsertTenUnsortedItems_PostIncrement_CorrectTenSortedIntsReturned)
-{
+TEST(UT004Iterator, DescendingTree_InsertTenUnsortedItems_PostIncrement_CorrectTenSortedIntsReturned) {
     base::Tree<int> tree([](int i, int j) -> bool { return i > j; });
     std::vector<int> ascending;
 
-    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i)
-    {
+    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i) {
         tree.insert(TEST_UNSORTED_INTS[i]);
     }
-    for (base::Tree<int>::iterator it = tree.begin(); it != tree.end(); it++)
-    {
+    for (base::Tree<int>::iterator it = tree.begin(); it != tree.end(); it++) {
         ascending.push_back((int)*it);
     }
 
-    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i)
-    {
+    for (int i = 0; i < TEST_NUM_OF_ELEMENTS; ++i) {
         ASSERT_EQ(TEST_DESCENDING_INTS[i], ascending[i]);
     }
 }
 
-TEST(UT004Iterator, Random1000Values_InsertAndCompareWithStlSet_ExpectSameSequence)
-{
+TEST(UT004Iterator, Random1000Values_InsertAndCompareWithStlSet_ExpectSameSequence) {
     std::default_random_engine randEngine;
     std::uniform_int_distribution<int> randDist(-1000000, 1000000);
     std::multiset<int> stlTree;
@@ -156,8 +135,7 @@ TEST(UT004Iterator, Random1000Values_InsertAndCompareWithStlSet_ExpectSameSequen
 
     // Fill vector with NUM_OF_NODES million integers between - 1 million and +
     // 1 million
-    for (int i = 0; i < NUM_OF_NODES; ++i)
-    {
+    for (int i = 0; i < NUM_OF_NODES; ++i) {
         currentRand = randDist(randEngine);
         stlTree.insert(currentRand);
         myTree.insert(currentRand);
@@ -166,8 +144,7 @@ TEST(UT004Iterator, Random1000Values_InsertAndCompareWithStlSet_ExpectSameSequen
     stlIt = stlTree.begin();
     myIt = myTree.begin();
 
-    for (int i = 0; i < NUM_OF_NODES; ++i)
-    {
+    for (int i = 0; i < NUM_OF_NODES; ++i) {
         EXPECT_EQ(*stlIt, *myIt);
         ++stlIt;
         ++myIt;
@@ -176,8 +153,7 @@ TEST(UT004Iterator, Random1000Values_InsertAndCompareWithStlSet_ExpectSameSequen
     EXPECT_TRUE(myIt == myTree.end());
 }
 
-TEST(UT004Iterator, InsertOneItem_IteratorDereferencePostIncrement_NoErrorAndCorrectValue)
-{
+TEST(UT004Iterator, InsertOneItem_IteratorDereferencePostIncrement_NoErrorAndCorrectValue) {
     base::Tree<int> tree;
     tree.insert(32987);
     auto it = tree.begin();

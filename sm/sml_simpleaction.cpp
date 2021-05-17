@@ -24,12 +24,8 @@
  */
 #include <sm/sml_simpleaction.h>
 
-namespace sml
-{
-SimpleAction::SimpleAction(std::function<void(void)> functionToCall)
-    : IAction(), _functionToCall(functionToCall)
-{
-}
+namespace sml {
+SimpleAction::SimpleAction(std::function<void(void)> functionToCall) : IAction(), _functionToCall(functionToCall) {}
 
 SimpleAction::SimpleAction() : _functionToCall() {}
 

@@ -29,8 +29,7 @@
 #include "CommonData.h"
 #include "gtest/gtest.h"
 
-TEST(UT002TreeHelper, LeftRotateSubtree_ExpectCorrectTreeStructureAfterRotation)
-{
+TEST(UT002TreeHelper, LeftRotateSubtree_ExpectCorrectTreeStructureAfterRotation) {
     /* Before
      *             root
      *                 \
@@ -76,13 +75,10 @@ TEST(UT002TreeHelper, LeftRotateSubtree_ExpectCorrectTreeStructureAfterRotation)
     // Check if all parents are correctly set
     EXPECT_STREQ("r1", newRoot->getLeftChild()->getParent()->getPayload().c_str());
     EXPECT_STREQ("r1", newRoot->getRightChild()->getParent()->getPayload().c_str());
-    EXPECT_STREQ(
-        "root",
-        newRoot->getLeftChild()->getRightChild()->getParent()->getPayload().c_str());
+    EXPECT_STREQ("root", newRoot->getLeftChild()->getRightChild()->getParent()->getPayload().c_str());
 }
 
-TEST(UT002TreeHelper, RightRotateSubtree_ExpectCorrectTreeStructureAfterRotation)
-{
+TEST(UT002TreeHelper, RightRotateSubtree_ExpectCorrectTreeStructureAfterRotation) {
     /* Before
      *             root
      *            /
@@ -128,7 +124,5 @@ TEST(UT002TreeHelper, RightRotateSubtree_ExpectCorrectTreeStructureAfterRotation
     // Check if all parents are correctly set
     EXPECT_STREQ("l1", newRoot->getRightChild()->getParent()->getPayload().c_str());
     EXPECT_STREQ("l1", newRoot->getLeftChild()->getParent()->getPayload().c_str());
-    EXPECT_STREQ(
-        "root",
-        newRoot->getRightChild()->getLeftChild()->getParent()->getPayload().c_str());
+    EXPECT_STREQ("root", newRoot->getRightChild()->getLeftChild()->getParent()->getPayload().c_str());
 }

@@ -31,8 +31,7 @@
 using testing::NiceMock;
 using testing::StrictMock;
 
-class UTStatemachine : public ::testing::Test
-{
+class UTStatemachine : public ::testing::Test {
    public:
     UTStatemachine();
     ~UTStatemachine();
