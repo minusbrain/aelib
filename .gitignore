@@ -33,9 +33,10 @@
 
 # Output folders
 _build/
+.build/
+build/
 release/
 debug/
-build/
 bin/
 lib/
 
@@ -44,3 +45,8 @@ lib/
 
 # Sublime
 *.sublime-workspace
+
+# VSCode
+.cache/
+.vscode/
+compile_commands.json
