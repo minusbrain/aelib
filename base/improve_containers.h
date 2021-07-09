@@ -81,9 +81,9 @@ inline std::ostream& stream_out_plain_container(char const* str, std::ostream& o
     os << "}";
     return os;
 }
-
 }  // namespace base
 
+namespace std {
 template <typename T, size_t size>
 inline std::ostream& operator<<(std::ostream& os, const std::array<T, size>& arr) {
     return base::stream_out_plain_container<std::array<T, size>>("Array", os, arr);
@@ -114,7 +114,7 @@ inline std::ostream& operator<<(std::ostream& os, const std::map<Key, Val>& map)
     os << "}";
     return os;
 }
-
+}  // namespace std
 namespace base {
 template <typename T>
 void sort(T& container) {
