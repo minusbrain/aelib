@@ -156,6 +156,11 @@ typename T::iterator remove_if(T& container, UnaryPredicate pred) {
     return remove_if(container.begin(), container.end(), pred);
 }
 
+template <class T, class U>
+typename T::iterator find(T& container, const U& value) {
+    return find(container.begin(), container.end(), value);
+}
+
 template <class T, class UnaryPredicate>
 typename T::iterator find_if(T& container, UnaryPredicate pred) {
     return find_if(container.begin(), container.end(), pred);
