@@ -81,6 +81,18 @@ inline std::ostream& stream_out_plain_container(char const* str, std::ostream& o
     os << "}";
     return os;
 }
+
+inline std::vector<std::string> tokenize(const std::string& input, char seperator) {
+    std::stringstream inputstream(input);
+    std::string token;
+    std::vector<std::string> tokens;
+
+    while (getline(inputstream, token, seperator)) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
 }  // namespace base
 
 namespace std {
