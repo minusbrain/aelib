@@ -28,6 +28,8 @@
 #include <memory>
 #include <ratio>
 
+#define BASE_INTENTIONALLY_UNUSED(var) (void)var
+
 namespace base {
 /**
  * \brief Returns the map-entry for provided key or nullptr if key does not
