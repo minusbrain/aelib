@@ -24,11 +24,11 @@
  */
 #pragma once
 
-#include <sm/sml_eventhandlerexpression.h>
-
 #include <map>
 #include <string>
 #include <vector>
+
+#include "sml_eventhandlerexpression.h"
 
 namespace sml {
 class IStateMachineInstance;

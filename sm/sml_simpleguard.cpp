@@ -22,7 +22,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <sm/sml_simpleguard.h>
+#include "sml_simpleguard.h"
 
 namespace sml {
 SimpleGuard::SimpleGuard(std::function<bool(void)> guardToCall, bool expectedResult)

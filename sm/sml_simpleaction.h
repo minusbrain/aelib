@@ -23,9 +23,9 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
-#include <sm/sml_if_action.h>
-
 #include <functional>
+
+#include "sml_if_action.h"
 
 namespace sml {
 class SimpleAction : public IAction {

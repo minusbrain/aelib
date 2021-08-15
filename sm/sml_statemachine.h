@@ -24,15 +24,15 @@
  */
 #pragma once
 
-#include <sm/sml_event.h>
-#include <sm/sml_ids.h>
-#include <sm/sml_interfaceaction.h>
-#include <sm/sml_interfaceguard.h>
-
 #include <functional>
 #include <map>
 #include <memory>
 #include <string>
+
+#include "sml_event.h"
+#include "sml_ids.h"
+#include "sml_interfaceaction.h"
+#include "sml_interfaceguard.h"
 
 namespace sml {
 static const unsigned int STATE_BM = 0x01000000;

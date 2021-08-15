@@ -22,11 +22,12 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <sm/sml_if_statemachineinstance.h>
-#include <sm/sml_simpleaction.h>
-#include <sm/sml_simpleguard.h>
-#include <sm/sml_state.h>
-#include <sm/sml_statemachine.h>
+#include "sml_state.h"
+
+#include "sml_if_statemachineinstance.h"
+#include "sml_simpleaction.h"
+#include "sml_simpleguard.h"
+#include "sml_statemachine.h"
 
 namespace sml {
 State::State() : _name(""), _events(), _entryActions(), _exitActions() {}

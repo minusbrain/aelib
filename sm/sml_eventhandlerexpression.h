@@ -23,9 +23,9 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
-#include <sm/sml_ids.h>
-
 #include <vector>
+
+#include "sml_ids.h"
 
 namespace sml {
 class EventHandlerExpression {

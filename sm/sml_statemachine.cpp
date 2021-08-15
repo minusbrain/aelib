@@ -22,14 +22,15 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <sm/sml_event.h>
-#include <sm/sml_simpleaction.h>
-#include <sm/sml_simpleguard.h>
-#include <sm/sml_state.h>
-#include <sm/sml_statemachine.h>
+#include "sml_statemachine.h"
 
 #include <algorithm>
 #include <map>
+
+#include "sml_event.h"
+#include "sml_simpleaction.h"
+#include "sml_simpleguard.h"
+#include "sml_state.h"
 
 namespace sml {
 StateMachine::StateMachine(const std::string& name)

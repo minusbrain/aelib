@@ -24,16 +24,16 @@
  */
 #pragma once
 
-#include <sm/sml_ids.h>
-#include <sm/sml_if_action.h>
-#include <sm/sml_if_guard.h>
-#include <sm/sml_if_statemachineinstance.h>
-#include <sm/sml_state.h>
-#include <sm/sml_statemachine.h>
-
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "sml_ids.h"
+#include "sml_if_action.h"
+#include "sml_if_guard.h"
+#include "sml_if_statemachineinstance.h"
+#include "sml_state.h"
+#include "sml_statemachine.h"
 
 namespace sml {
 class StateMachine;

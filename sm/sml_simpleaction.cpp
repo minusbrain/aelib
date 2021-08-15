@@ -22,7 +22,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <sm/sml_simpleaction.h>
+#include "sml_simpleaction.h"
 
 namespace sml {
 SimpleAction::SimpleAction(std::function<void(void)> functionToCall) : IAction(), _functionToCall(functionToCall) {}

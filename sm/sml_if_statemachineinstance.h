@@ -24,10 +24,10 @@
  */
 #pragma once
 
-#include <sm/sml_ids.h>
-
 #include <string>
 #include <vector>
+
+#include "sml_ids.h"
 
 namespace sml {
 class IAction;

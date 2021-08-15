@@ -22,7 +22,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <sm/sml_event.h>
+#include "sml_event.h"
 
 namespace sml {
 Event::Event(const std::string& name) : _name(name) {}

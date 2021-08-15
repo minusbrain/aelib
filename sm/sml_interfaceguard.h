@@ -23,9 +23,9 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
-#include <sm/sml_if_guard.h>
-
 #include <functional>
+
+#include "sml_if_guard.h"
 
 namespace sml {
 template <class T_If>

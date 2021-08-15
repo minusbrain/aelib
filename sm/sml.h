@@ -22,7 +22,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include <sm/sml_eventhandlerexpression.h>
-#include <sm/sml_ids.h>
-#include <sm/sml_statemachine.h>
-#include <sm/sml_statemachineinstance.h>
+#include "sml_eventhandlerexpression.h"
+#include "sml_ids.h"
+#include "sml_statemachine.h"
+#include "sml_statemachineinstance.h"
