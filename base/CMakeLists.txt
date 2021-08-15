@@ -9,8 +9,6 @@ SET (THIS_SRC
         manager_pattern.h
         registry_pattern.h
 
-        poco_config_helper.h
-
         helpers.h
         observer.h
 
@@ -19,6 +17,5 @@ SET (THIS_SRC
 
 add_library(aelib_base ${THIS_SRC})
 set_property(TARGET aelib_base PROPERTY CXX_STANDARD 17)
-target_link_libraries(aelib_base PUBLIC Poco::Foundation Poco::Util)
 
 add_subdirectory (ut)

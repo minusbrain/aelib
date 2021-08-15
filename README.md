@@ -8,17 +8,6 @@ C++ header only lib with basic functionalities that extend C++ STL and PocoLibra
 * transform_if algorithm -> Modifies each value in a range that matches a condition
 * OStream Helper -> Some helper functions to print out data using ostreams
 
-## Poco related functions:
-
-Preconditions:
-
-* These functions depend on the availability of PocoLibraries on the system
-* User of base lib is responsible for fulfilling this dependency via the build tooling
-
-Functions:
-
-* Recursive print a Poco abstract configuration object
-
 ## General purpose tools
 
 * Registry Pattern template -> register subclasses of a baseclass identified by a String

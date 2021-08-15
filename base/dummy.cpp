@@ -29,7 +29,6 @@
 #include "improve_containers.h"
 #include "manager_pattern.h"
 #include "observer.h"
-#include "poco_config_helper.h"
 #include "registry_pattern.h"
 #include "sorted_find.h"
 #include "transform_if.h"
