@@ -23,11 +23,11 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
-#include <aelib/sm/sml.h>
-#include <aelib/sm/ut/actionmock.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "../sml.h"
+#include "actionmock.h"
 
 using testing::NiceMock;
 using testing::StrictMock;
