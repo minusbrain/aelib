@@ -24,18 +24,20 @@
  */
 #pragma once
 
-#include <aelib/base/improve_containers.h>
-
+#include <cassert>
+#include <exception>
 #include <iomanip>
 #include <iostream>
 #include <map>
 #include <optional>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <variant>
 #include <vector>
 
 #include "helpers.h"
+#include "improve_containers.h"
 
 namespace base {
 
@@ -44,6 +46,63 @@ using cl_parsed_options = std::map<std::string, T_option_value>;
 
 enum class argparser_option_type { UNDECIDED, INT, FLOAT, STRING, FLAG };
 
+class cl_option;
+}  // namespace base
+
+// Forward declarations stream output helper
+std::ostream& operator<<(std::ostream& os, const base::cl_option& opt);
+
+namespace std {
+std::ostream& operator<<(std::ostream& os, const base::T_option_value& val);
+}
+
+namespace base {
+
+/*
+    Parsing result will be returned back to user
+*/
+class argparse_result {
+   public:
+    argparse_result() = default;
+    ~argparse_result() = default;
+
+    bool success() const { return _success; }
+    T_option_value operator[](const std::string& index) const { return _parsed_options.at(index); }
+    bool has_option(const std::string& index) const { return _parsed_options.find(index) != _parsed_options.end(); }
+
+    void insert(std::string key, T_option_value value) { _parsed_options.insert_or_assign(key, value); }
+    void add_error(std::string error, bool fatal = false) {
+        _errors.push_back(error);
+        if (fatal) _success = false;
+    }
+
+    const std::vector<std::string>& get_errors() const { return _errors; }
+
+   private:
+    cl_parsed_options _parsed_options;
+    std::vector<std::string> _errors;
+    bool _success = true;
+};
+
+/*
+    Parsing context. Context information for single parse call
+*/
+struct parse_context {
+    parse_context(const std::vector<cl_option>& options, const std::vector<std::string>& args)
+        : _parsed(), _options(options), _args(args), _missing_mandatory_options() {}
+
+    bool all_mandatories_found() const { return _missing_mandatory_options.size() == 0; }
+    std::vector<cl_option> get_missing_mandatories() const { return _missing_mandatory_options; }
+
+    argparse_result _parsed;
+    const std::vector<cl_option>& _options;
+    const std::vector<std::string>& _args;
+    std::vector<cl_option> _missing_mandatory_options;
+};
+
+/*
+    Single Command line option used for parsing
+*/
 class cl_option {
    public:
     cl_option(std::string option_name)
@@ -147,6 +206,41 @@ class cl_option {
                 !(is_mandatory() && _option_type != argparser_option_type::FLAG));
     }
 
+    bool matches(std::string long_option) const {
+        if (has_long_option())
+            return long_option == get_long_option();
+        else
+            return false;
+    }
+
+    void consume(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) const {
+        if (get_type() == argparser_option_type::FLAG) {
+            ctxt._parsed.insert(get_name(), true);
+        } else {
+            if (args.size() <= pos + 1) {
+                std::stringstream err;
+                err << "Missing option value for option " << *this;
+                ctxt._parsed.add_error(err.str(), true);
+            } else {
+                ++pos;
+                if (get_type() == argparser_option_type::FLOAT) {
+                    ctxt._parsed.insert(get_name(), std::stof(args[pos]));
+                } else if (get_type() == argparser_option_type::INT) {
+                    ctxt._parsed.insert(get_name(), std::stoi(args[pos]));
+                } else if (get_type() == argparser_option_type::STRING) {
+                    ctxt._parsed.insert(get_name(), args[pos]);
+                }
+            }
+        }
+    }
+
+    bool matches(char short_option) const {
+        if (has_short_option())
+            return short_option == get_short_option();
+        else
+            return false;
+    }
+
    private:
     std::optional<char> _short_option;
     std::optional<std::string> _long_option;
@@ -157,6 +251,13 @@ class cl_option {
     bool _mandatory;
 };
 
+/*
+    Command line parser. Tieing it all together.
+
+    Consists ot multiple cl_options. And then can parse
+    command line arguments and genereates an argparse_result
+    as result
+*/
 class argparser {
    public:
     argparser(std::string app_name) : _app_name(app_name), _options(){};
@@ -169,15 +270,52 @@ class argparser {
         return _options.back();
     }
 
-    cl_parsed_options parse(int argc, char** argv) {
-        BASE_INTENTIONALLY_UNUSED(argc);
-        BASE_INTENTIONALLY_UNUSED(argv);
+    argparse_result parse(int argc, char** argv) {
+        std::vector<std::string> args(argc);
+        for (int i = 0; i < argc; ++i) args.push_back(std::string(argv[i]));
 
-        return cl_parsed_options{};
+        return parse(args);
     }
-    cl_parsed_options parse(std::vector<std::string>& args) {
-        BASE_INTENTIONALLY_UNUSED(args);
-        return cl_parsed_options{};
+
+    argparse_result parse(std::vector<std::string>& args) {
+        parse_context ctxt{_options, args};
+
+        try {
+            for (auto& opt : _options) {
+                if (opt.is_mandatory()) {
+                    ctxt._missing_mandatory_options.push_back(opt);
+                }
+                if (opt.has_default_value()) {
+                    ctxt._parsed.insert(opt.get_name(), opt.get_default_value());
+                }
+            }
+
+            for (size_t i = 1; i < args.size(); ++i) {
+                if (args[i].rfind("--", 0) == 0) {
+                    handle_potential_long_option(ctxt, args, i);
+                } else if (args[i].rfind("-", 0) == 0) {
+                    handle_potential_short_option(ctxt, args, i);
+                } else {
+                    std::stringstream err;
+                    err << "Ignored non-option " << args[i];
+                    ctxt._parsed.add_error(err.str());
+                }
+            }
+
+            if (ctxt.all_mandatories_found() == false) {
+                std::stringstream err;
+                err << "The following mandatory parameters are missing" << ctxt.get_missing_mandatories();
+                ctxt._parsed.add_error(err.str(), true);
+
+                print_help();
+            }
+        } catch (const std::exception& ex) {
+            std::stringstream err;
+            err << "Caught exception during parsing " << ex.what();
+            ctxt._parsed.add_error(err.str(), true);
+        }
+
+        return ctxt._parsed;
     }
 
     void print_help() {
@@ -201,12 +339,32 @@ class argparser {
     // cl_parser.add_parameters("words", "List of words");
 
    private:
+    void handle_potential_long_option(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) {
+        std::string param{};
+        std::copy(args[pos].begin() + 2, args[pos].end(), std::back_inserter(param));
+        for (auto& opt : ctxt._options) {
+            if (opt.matches(param)) {
+                opt.consume(ctxt, args, pos);
+            }
+        }
+    }
+
+    void handle_potential_short_option(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) {
+        char param{args[pos][1]};
+        for (auto& opt : ctxt._options) {
+            if (opt.matches(param)) {
+                opt.consume(ctxt, args, pos);
+            }
+        }
+    }
+
     std::string _app_name;
     std::vector<cl_option> _options;
 };
 
 }  // namespace base
 
+namespace std {
 inline std::ostream& operator<<(std::ostream& os, const base::T_option_value& val) {
     std::visit(
         [&os](auto&& arg) {
@@ -226,6 +384,7 @@ inline std::ostream& operator<<(std::ostream& os, const base::T_option_value& va
 
     return os;
 }
+}  // namespace std
 
 inline std::ostream& operator<<(std::ostream& os, const base::cl_option& opt) {
     os << "Command Line Option ('" << opt.get_name() << "'";

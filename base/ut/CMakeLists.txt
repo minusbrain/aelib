@@ -6,6 +6,7 @@ SET (THIS_SRC
         ut_sorted_find.cpp
         ut_improve_containers.cpp
         ut_observer.cpp
+        ut_argparser.cpp
     )
 
 # Improve containers and algorithms
