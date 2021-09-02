@@ -234,11 +234,25 @@ class cl_option {
             } else {
                 ++pos;
                 if (get_type() == argparser_option_type::FLOAT) {
-                    ctxt._parsed.insert(get_name(), std::stof(args[pos]));
-                    ctxt.remove_from_missing_mandatory_options(get_name());
+                    try {
+                        ctxt._parsed.insert(get_name(), std::stof(args[pos]));
+                        ctxt.remove_from_missing_mandatory_options(get_name());
+                    } catch (const std::invalid_argument& ex) {
+                        std::stringstream err;
+                        err << "Could not parse '" << args[pos] << "' for option '" << get_name()
+                            << "' as expected float. Error: " << ex.what();
+                        ctxt._parsed.add_error(err.str(), true);
+                    }
                 } else if (get_type() == argparser_option_type::INT) {
-                    ctxt._parsed.insert(get_name(), std::stoi(args[pos]));
-                    ctxt.remove_from_missing_mandatory_options(get_name());
+                    try {
+                        ctxt._parsed.insert(get_name(), std::stoi(args[pos]));
+                        ctxt.remove_from_missing_mandatory_options(get_name());
+                    } catch (const std::invalid_argument& ex) {
+                        std::stringstream err;
+                        err << "Could not parse '" << args[pos] << "' for option '" << get_name()
+                            << "' as expected int. Error: " << ex.what();
+                        ctxt._parsed.add_error(err.str(), true);
+                    }
                 } else if (get_type() == argparser_option_type::STRING) {
                     ctxt._parsed.insert(get_name(), args[pos]);
                     ctxt.remove_from_missing_mandatory_options(get_name());
