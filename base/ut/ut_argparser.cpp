@@ -1,7 +1,7 @@
 /**
  * @author     Andreas Evers
  *
- * @copyright  Copyright © 2020 Andreas Evers
+ * @copyright  Copyright © 2021 Andreas Evers
  *
  * MIT License
  *
@@ -397,3 +397,20 @@ TEST(Argparser,
     EXPECT_TRUE(parsed.has_option("number"));
     EXPECT_EQ(8, std::get<int>(parsed["number"]));
 }
+
+// Test
+// add_option("bla").default("Hallo");
+// Expect type = String
+// Same for float und int
+
+// Test
+// add_option("name")
+// EXPECT_THROW add_option("name")
+
+// Test
+// add_option().long_option("bla")
+// EXPECT_THROW add_option().long_option("bla")
+
+// Test
+// add_option().short_option('b')
+// EXPECT_THROW add_option().short_option('b')
