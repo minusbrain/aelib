@@ -33,6 +33,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <system_error>
 #include <variant>
 #include <vector>
 
@@ -94,12 +95,18 @@ struct parse_context {
         : _parsed(), _options(options), _args(args), _missing_mandatory_options() {}
 
     bool all_mandatories_found() const { return _missing_mandatory_options.size() == 0; }
-    std::vector<cl_option> get_missing_mandatories() const { return _missing_mandatory_options; }
+    std::vector<std::string> get_missing_mandatories() const { return _missing_mandatory_options; }
+    void remove_from_missing_mandatory_options(const std::string& name) {
+        auto it = base::find(_missing_mandatory_options, name);
+        if (it != _missing_mandatory_options.end()) {
+            _missing_mandatory_options.erase(it);
+        }
+    }
 
     argparse_result _parsed;
     const std::vector<cl_option>& _options;
     const std::vector<std::string>& _args;
-    std::vector<cl_option> _missing_mandatory_options;
+    std::vector<std::string> _missing_mandatory_options;
 };
 
 /*
@@ -205,7 +212,7 @@ class cl_option {
 
     bool is_valid() const {
         return (is_type_decided() && (has_short_option() || has_long_option()) &&
-                !(is_mandatory() && _option_type != argparser_option_type::FLAG));
+                !(is_mandatory() && _option_type == argparser_option_type::FLAG));
     }
 
     bool matches(std::string long_option) const {
@@ -218,6 +225,7 @@ class cl_option {
     void consume(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) const {
         if (get_type() == argparser_option_type::FLAG) {
             ctxt._parsed.insert(get_name(), true);
+            ctxt.remove_from_missing_mandatory_options(get_name());
         } else {
             if (args.size() <= pos + 1) {
                 std::stringstream err;
@@ -227,10 +235,13 @@ class cl_option {
                 ++pos;
                 if (get_type() == argparser_option_type::FLOAT) {
                     ctxt._parsed.insert(get_name(), std::stof(args[pos]));
+                    ctxt.remove_from_missing_mandatory_options(get_name());
                 } else if (get_type() == argparser_option_type::INT) {
                     ctxt._parsed.insert(get_name(), std::stoi(args[pos]));
+                    ctxt.remove_from_missing_mandatory_options(get_name());
                 } else if (get_type() == argparser_option_type::STRING) {
                     ctxt._parsed.insert(get_name(), args[pos]);
+                    ctxt.remove_from_missing_mandatory_options(get_name());
                 }
             }
         }
@@ -285,7 +296,7 @@ class argparser {
         try {
             for (auto& opt : _options) {
                 if (opt.is_mandatory()) {
-                    ctxt._missing_mandatory_options.push_back(opt);
+                    ctxt._missing_mandatory_options.push_back(opt.get_name());
                 }
                 if (opt.has_default_value()) {
                     ctxt._parsed.insert(opt.get_name(), opt.get_default_value());
@@ -306,10 +317,10 @@ class argparser {
 
             if (ctxt.all_mandatories_found() == false) {
                 std::stringstream err;
-                err << "The following mandatory parameters are missing" << ctxt.get_missing_mandatories();
+                err << "The following mandatory parameters are missing " << ctxt.get_missing_mandatories();
                 ctxt._parsed.add_error(err.str(), true);
 
-                print_help();
+                print_help(&ctxt._parsed.get_errors());
             }
         } catch (const std::exception& ex) {
             std::stringstream err;
@@ -320,8 +331,15 @@ class argparser {
         return ctxt._parsed;
     }
 
-    void print_help() {
+    void print_help(const std::vector<std::string>* errors = nullptr) {
         assert(all_options_valid());
+        if (errors != nullptr) {
+            std::cout << "Errors while parsing commandline: \n";
+            for (auto& error : *errors) {
+                std::cout << "* " << error << "\n";
+            }
+            std::cout << "\n";
+        }
         std::cout << "Usage:\n" << get_app_name();
         for (auto& opt : _options) {
             std::cout << (opt.is_mandatory() ? " " : " [");
@@ -329,9 +347,19 @@ class argparser {
             if (opt.has_short_option()) std::cout << "-" << opt.get_short_option();
             if (has_both_options) std::cout << "|";
             if (opt.has_long_option()) std::cout << "--" << opt.get_long_option();
+            if (opt.get_type() != argparser_option_type::FLAG) std::cout << " <" << opt.get_name() << ">";
             std::cout << (opt.is_mandatory() ? "" : "]");
         }
-        std::cout << "\n";
+        std::cout << "\n\nParameters:\n";
+        for (auto& opt : _options) {
+            std::cout << "* ";
+            bool has_both_options = opt.has_short_option() && opt.has_long_option();
+            if (opt.has_short_option()) std::cout << "-" << opt.get_short_option();
+            if (has_both_options) std::cout << " | ";
+            if (opt.has_long_option()) std::cout << "--" << opt.get_long_option();
+            if (opt.has_description()) std::cout << " : " << opt.get_description();
+            std::cout << "\n";
+        }
     }
 
     std::vector<cl_option> get_options() const { return _options; }
