@@ -70,6 +70,8 @@ class argparse_result {
     T_option_value operator[](const std::string& index) const { return _parsed_options.at(index); }
     bool has_option(const std::string& index) const { return _parsed_options.find(index) != _parsed_options.end(); }
 
+    const cl_parsed_options& get_options() { return _parsed_options; }
+
     void insert(std::string key, T_option_value value) { _parsed_options.insert_or_assign(key, value); }
     void add_error(std::string error, bool fatal = false) {
         _errors.push_back(error);
@@ -329,6 +331,7 @@ class argparser {
             if (opt.has_long_option()) std::cout << "--" << opt.get_long_option();
             std::cout << (opt.is_mandatory() ? "" : "]");
         }
+        std::cout << "\n";
     }
 
     std::vector<cl_option> get_options() const { return _options; }
