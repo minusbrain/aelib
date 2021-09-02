@@ -293,4 +293,42 @@ TEST(Argparser, MissingLongOptionValueButSecondOption_SimpleParserGettingIncorre
     EXPECT_THROW(std::get<float>(parsed2["number"]), std::exception);
 }
 
-// std::cout << parsed.get_errors() << "\n";
+TEST(Argparser, PrintHelpOutput_VerifyContent) {
+    /* Expected Output
+    Usage:
+    test -e <email> --pos <position> [-n|--number <number>] [--option]
+
+    Parameters:
+    -e <email>             : A mandatory email to be used
+    --pos <position>       : Mandatory position
+    -n | --number <number> : Provide the floating point number to be used by the tool
+    --option               : Wether or not an option should be active
+    */
+
+    std::string expected{
+        "Usage:\ntest -e <email> --pos <position> [-n|--number <number>] [--option]\n\nParameters:\n-e <email>         "
+        "    : A mandatory email to be used\n--pos <position>       : Mandatory position\n-n | --number <number> : "
+        "Provide the floating point number to be used by the tool\n--option               : Wether or not an option "
+        "should be active\n"};
+
+    argparser parser{"test"};
+    parser.add_option("number")
+        .short_option('n')
+        .long_option("number")
+        .type(aot::FLOAT)
+        .description("Provide the floating point number to be used by the tool");
+    parser.add_option("option").long_option("option").type(aot::FLAG).description(
+        "Wether or not an option should be active");
+    parser.add_option("position").long_option("pos").type(aot::INT).description("Mandatory position").mandatory();
+    parser.add_option("email")
+        .short_option('e')
+        .type(aot::STRING)
+        .mandatory()
+        .description("A mandatory email to be used");
+
+    EXPECT_TRUE(parser.all_options_valid());
+
+    std::stringstream strstr;
+    parser.print_help(strstr);
+    EXPECT_EQ(expected, strstr.str());
+}

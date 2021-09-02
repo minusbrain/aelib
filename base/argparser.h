@@ -124,6 +124,15 @@ class cl_option {
           _mandatory(false) {}
     ~cl_option() = default;
 
+    bool operator<(const cl_option& other) {
+        if (is_mandatory() == other.is_mandatory())
+            return get_name() < other.get_name();
+        else if (is_mandatory())
+            return true;
+        else
+            return false;
+    }
+
     std::string get_name() const { return _option_name; }
 
     cl_option& default_value(int val) {
@@ -345,6 +354,7 @@ class argparser {
 
     void print_help(std::ostream& os, const std::vector<std::string>* errors = nullptr) {
         assert(all_options_valid());
+        base::sort(_options);
         if (errors != nullptr) {
             os << "Errors while parsing commandline: \n";
             for (auto& error : *errors) {
@@ -363,14 +373,28 @@ class argparser {
             os << (opt.is_mandatory() ? "" : "]");
         }
         os << "\n\nParameters:\n";
+        std::vector<std::stringstream> params;
         for (auto& opt : _options) {
-            os << "* ";
+            params.push_back(std::stringstream{});
             bool has_both_options = opt.has_short_option() && opt.has_long_option();
-            if (opt.has_short_option()) os << "-" << opt.get_short_option();
-            if (has_both_options) os << " | ";
-            if (opt.has_long_option()) os << "--" << opt.get_long_option();
-            if (opt.has_description()) os << " : " << opt.get_description();
-            os << "\n";
+            if (opt.has_short_option()) params.back() << "-" << opt.get_short_option();
+            if (has_both_options) params.back() << " | ";
+            if (opt.has_long_option()) params.back() << "--" << opt.get_long_option();
+            if (opt.get_type() != argparser_option_type::FLAG) params.back() << " <" << opt.get_name() << ">";
+        }
+        size_t max = 0;
+        for (auto& paramstr : params) {
+            if (paramstr.str().size() > max) max = paramstr.str().size();
+        }
+
+        int i = -1;
+        for (auto& opt : _options) {
+            ++i;
+            if (!opt.has_description()) continue;
+            size_t gap = max - params[i].str().size();
+            std::string gapstr(gap, ' ');
+            params[i] << gapstr << " : " << opt.get_description();
+            os << params[i].str() << "\n";
         }
     }
 
