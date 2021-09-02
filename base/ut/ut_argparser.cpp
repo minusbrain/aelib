@@ -24,6 +24,8 @@
  */
 #include <base/argparser.h>
 
+#include <exception>
+
 #include "gtest/gtest.h"
 
 using base::argparser;
@@ -176,7 +178,7 @@ TEST(Argparser, ShortFloat_SimpleParserGettingCorrectInput_ExpectCorrectParsedAr
 
     EXPECT_TRUE(parsed1.success());
     EXPECT_TRUE(parsed1.has_option("number"));
-    EXPECT_DOUBLE_EQ(42.69f, std::get<float>(parsed1["number"]));
+    EXPECT_FLOAT_EQ(42.69f, std::get<float>(parsed1["number"]));
 
     std::vector<std::string> args2{"test"};
     auto parsed2 = parser.parse(args2);
@@ -197,7 +199,7 @@ TEST(Argparser, LongFloat_SimpleParserGettingCorrectInput_ExpectCorrectParsedArg
 
     EXPECT_TRUE(parsed1.success());
     EXPECT_TRUE(parsed1.has_option("number"));
-    EXPECT_DOUBLE_EQ(42.69f, std::get<float>(parsed1["number"]));
+    EXPECT_FLOAT_EQ(42.69f, std::get<float>(parsed1["number"]));
 
     std::vector<std::string> args2{"test"};
     auto parsed2 = parser.parse(args2);
@@ -331,4 +333,67 @@ TEST(Argparser, PrintHelpOutput_VerifyContent) {
     std::stringstream strstr;
     parser.print_help(strstr);
     EXPECT_EQ(expected, strstr.str());
+}
+
+TEST(Argparser, AlternativeOptionValueFormatShortOption_SimpleParserGettingCorrectInput_ExpectSuccessfulParsing) {
+    argparser parser{"test"};
+    parser.add_option("number").short_option('n').type(aot::FLOAT);
+
+    EXPECT_TRUE(parser.all_options_valid());
+
+    std::vector<std::string> args{"test", "-n=23.45"};
+    auto parsed = parser.parse(args);
+
+    EXPECT_TRUE(parsed.success());
+    EXPECT_TRUE(parsed.has_option("number"));
+    EXPECT_FLOAT_EQ(23.45, std::get<float>(parsed["number"]));
+}
+
+TEST(Argparser, AlternativeOptionValueFormatLongOption_SimpleParserGettingCorrectInput_ExpectSuccessfulParsing) {
+    argparser parser{"test"};
+    parser.add_option("number").long_option("number").type(aot::FLOAT);
+
+    EXPECT_TRUE(parser.all_options_valid());
+
+    std::vector<std::string> args{"test", "--number=23.45"};
+    auto parsed = parser.parse(args);
+
+    EXPECT_TRUE(parsed.success());
+    EXPECT_TRUE(parsed.has_option("number"));
+    EXPECT_FLOAT_EQ(23.45, std::get<float>(parsed["number"]));
+}
+
+TEST(Argparser, InvalidShortOptionName_SimpleParser_ExpectNotValid) {
+    argparser parser{"test"};
+    EXPECT_THROW(parser.add_option("number").short_option('=').type(aot::FLOAT), std::exception);
+
+    EXPECT_FALSE(parser.all_options_valid());
+
+    std::vector<std::string> args{"test", "-n=23.45"};
+    EXPECT_THROW(parser.parse(args), std::exception);
+}
+
+TEST(Argparser, InvalidLongOptionName_SimpleParser_ExpectNotValid) {
+    argparser parser{"test"};
+    EXPECT_THROW(parser.add_option("number").long_option("=").type(aot::FLOAT), std::exception);
+
+    EXPECT_FALSE(parser.all_options_valid());
+
+    std::vector<std::string> args{"test", "-n=23.45"};
+    EXPECT_THROW(parser.parse(args), std::exception);
+}
+
+TEST(Argparser,
+     AnotherAlternativeOptionValueFormatShortOption_SimpleParserGettingCorrectInput_ExpectSuccessfulParsing) {
+    argparser parser{"test"};
+    parser.add_option("number").short_option('n').type(aot::INT);
+
+    EXPECT_TRUE(parser.all_options_valid());
+
+    std::vector<std::string> args{"test", "-n8"};
+    auto parsed = parser.parse(args);
+
+    EXPECT_TRUE(parsed.success());
+    EXPECT_TRUE(parsed.has_option("number"));
+    EXPECT_EQ(8, std::get<int>(parsed["number"]));
 }

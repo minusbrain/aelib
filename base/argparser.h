@@ -25,9 +25,11 @@
 #pragma once
 
 #include <cassert>
+#include <cctype>
 #include <exception>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <optional>
 #include <sstream>
@@ -121,8 +123,11 @@ class cl_option {
           _option_name(option_name),
           _option_description(),
           _default_value(std::nullopt),
+          _valid(true),
           _mandatory(false) {}
     ~cl_option() = default;
+
+    enum short_or_long_option { SHORT_OPTION, LONG_OPTION };
 
     bool operator<(const cl_option& other) {
         if (is_mandatory() == other.is_mandatory())
@@ -157,6 +162,7 @@ class cl_option {
 
     cl_option& default_value(std::string val) {
         if (_option_type != argparser_option_type::UNDECIDED && _option_type != argparser_option_type::STRING) {
+            _valid = false;
             throw std::invalid_argument(
                 "Trying to set default value to STRING even though its already defined as a different type.");
         }
@@ -173,6 +179,10 @@ class cl_option {
     std::string get_default_value_as_string() const { return std::get<std::string>(_default_value); }
 
     cl_option& short_option(char short_option) {
+        if (!std::isalnum(short_option)) {
+            _valid = false;
+            throw std::invalid_argument("Trying to set short option to non alphanumeric character");
+        }
         _short_option = short_option;
         return *this;
     }
@@ -181,6 +191,12 @@ class cl_option {
     char get_short_option() const { return _short_option.value(); }
 
     cl_option& long_option(std::string long_option) {
+        auto it = base::find_if(long_option, [](char c) { return !std::isalnum(c); });
+        if (it != long_option.end()) {
+            _valid = false;
+            throw std::invalid_argument(
+                "Trying to set long option to something containing non alphanumeric characters");
+        }
         _long_option = long_option;
         return *this;
     }
@@ -220,61 +236,68 @@ class cl_option {
     bool is_type_decided() const { return _option_type != argparser_option_type::UNDECIDED; }
 
     bool is_valid() const {
-        return (is_type_decided() && (has_short_option() || has_long_option()) &&
-                !(is_mandatory() && _option_type == argparser_option_type::FLAG));
+        if (_valid) {
+            return (is_type_decided() && (has_short_option() || has_long_option()) &&
+                    !(is_mandatory() && _option_type == argparser_option_type::FLAG));
+        }
+        return _valid;
     }
 
-    bool matches(std::string long_option) const {
-        if (has_long_option())
-            return long_option == get_long_option();
+    bool matches(std::string option) const {
+        if (has_long_option() && (option.find(get_long_option()) == 0))
+            return true;
+        else if (has_short_option() && (option[0] == get_short_option()))
+            return true;
         else
             return false;
     }
 
-    void consume(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) const {
+    void consume(parse_context& ctxt, std::vector<std::string>& args, size_t& pos, short_or_long_option sol) const {
+        auto it = base::find(args[pos], '=');
+        std::string value;
+        if (it != args[pos].end()) {
+            std::copy(it + 1, args[pos].end(), std::back_inserter(value));
+        } else if (sol == SHORT_OPTION && args[pos].size() > 2) {
+            std::copy(args[pos].begin() + 2, args[pos].end(), std::back_inserter(value));
+        }
         if (get_type() == argparser_option_type::FLAG) {
             ctxt._parsed.insert(get_name(), true);
             ctxt.remove_from_missing_mandatory_options(get_name());
         } else {
-            if (args.size() <= pos + 1) {
+            if (value.empty() && args.size() <= pos + 1) {
                 std::stringstream err;
                 err << "Missing option value for option " << *this;
                 ctxt._parsed.add_error(err.str(), true);
             } else {
-                ++pos;
+                if (value.empty()) {
+                    value = args[++pos];
+                }
                 if (get_type() == argparser_option_type::FLOAT) {
                     try {
-                        ctxt._parsed.insert(get_name(), std::stof(args[pos]));
+                        ctxt._parsed.insert(get_name(), std::stof(value));
                         ctxt.remove_from_missing_mandatory_options(get_name());
                     } catch (const std::invalid_argument& ex) {
                         std::stringstream err;
-                        err << "Could not parse '" << args[pos] << "' for option '" << get_name()
+                        err << "Could not parse '" << value << "' for option '" << get_name()
                             << "' as expected float. Error: " << ex.what();
                         ctxt._parsed.add_error(err.str(), true);
                     }
                 } else if (get_type() == argparser_option_type::INT) {
                     try {
-                        ctxt._parsed.insert(get_name(), std::stoi(args[pos]));
+                        ctxt._parsed.insert(get_name(), std::stoi(value));
                         ctxt.remove_from_missing_mandatory_options(get_name());
                     } catch (const std::invalid_argument& ex) {
                         std::stringstream err;
-                        err << "Could not parse '" << args[pos] << "' for option '" << get_name()
+                        err << "Could not parse '" << value << "' for option '" << get_name()
                             << "' as expected int. Error: " << ex.what();
                         ctxt._parsed.add_error(err.str(), true);
                     }
                 } else if (get_type() == argparser_option_type::STRING) {
-                    ctxt._parsed.insert(get_name(), args[pos]);
+                    ctxt._parsed.insert(get_name(), value);
                     ctxt.remove_from_missing_mandatory_options(get_name());
                 }
             }
         }
-    }
-
-    bool matches(char short_option) const {
-        if (has_short_option())
-            return short_option == get_short_option();
-        else
-            return false;
     }
 
    private:
@@ -284,6 +307,7 @@ class cl_option {
     std::string _option_name;
     std::optional<std::string> _option_description;
     T_option_value _default_value;
+    bool _valid;
     bool _mandatory;
 };
 
@@ -315,6 +339,10 @@ class argparser {
 
     argparse_result parse(std::vector<std::string>& args) {
         parse_context ctxt{_options, args};
+
+        if (!all_options_valid()) {
+            throw std::logic_error("Trying to parse while not all options added are valid");
+        }
 
         try {
             for (auto& opt : _options) {
@@ -353,7 +381,9 @@ class argparser {
     }
 
     void print_help(std::ostream& os, const std::vector<std::string>* errors = nullptr) {
-        assert(all_options_valid());
+        if (!all_options_valid()) {
+            throw std::logic_error("Trying to print help while not all options added are valid");
+        }
         base::sort(_options);
         if (errors != nullptr) {
             os << "Errors while parsing commandline: \n";
@@ -411,16 +441,17 @@ class argparser {
         std::copy(args[pos].begin() + 2, args[pos].end(), std::back_inserter(param));
         for (auto& opt : ctxt._options) {
             if (opt.matches(param)) {
-                opt.consume(ctxt, args, pos);
+                opt.consume(ctxt, args, pos, cl_option::LONG_OPTION);
             }
         }
     }
 
     void handle_potential_short_option(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) {
-        char param{args[pos][1]};
+        std::string param{};
+        std::copy(args[pos].begin() + 1, args[pos].end(), std::back_inserter(param));
         for (auto& opt : ctxt._options) {
             if (opt.matches(param)) {
-                opt.consume(ctxt, args, pos);
+                opt.consume(ctxt, args, pos, cl_option::SHORT_OPTION);
             }
         }
     }
