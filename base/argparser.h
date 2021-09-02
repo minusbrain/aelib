@@ -319,8 +319,6 @@ class argparser {
                 std::stringstream err;
                 err << "The following mandatory parameters are missing " << ctxt.get_missing_mandatories();
                 ctxt._parsed.add_error(err.str(), true);
-
-                print_help(&ctxt._parsed.get_errors());
             }
         } catch (const std::exception& ex) {
             std::stringstream err;
@@ -331,34 +329,34 @@ class argparser {
         return ctxt._parsed;
     }
 
-    void print_help(const std::vector<std::string>* errors = nullptr) {
+    void print_help(std::ostream& os, const std::vector<std::string>* errors = nullptr) {
         assert(all_options_valid());
         if (errors != nullptr) {
-            std::cout << "Errors while parsing commandline: \n";
+            os << "Errors while parsing commandline: \n";
             for (auto& error : *errors) {
-                std::cout << "* " << error << "\n";
+                os << "* " << error << "\n";
             }
-            std::cout << "\n";
+            os << "\n";
         }
-        std::cout << "Usage:\n" << get_app_name();
+        os << "Usage:\n" << get_app_name();
         for (auto& opt : _options) {
-            std::cout << (opt.is_mandatory() ? " " : " [");
+            os << (opt.is_mandatory() ? " " : " [");
             bool has_both_options = opt.has_short_option() && opt.has_long_option();
-            if (opt.has_short_option()) std::cout << "-" << opt.get_short_option();
-            if (has_both_options) std::cout << "|";
-            if (opt.has_long_option()) std::cout << "--" << opt.get_long_option();
-            if (opt.get_type() != argparser_option_type::FLAG) std::cout << " <" << opt.get_name() << ">";
-            std::cout << (opt.is_mandatory() ? "" : "]");
+            if (opt.has_short_option()) os << "-" << opt.get_short_option();
+            if (has_both_options) os << "|";
+            if (opt.has_long_option()) os << "--" << opt.get_long_option();
+            if (opt.get_type() != argparser_option_type::FLAG) os << " <" << opt.get_name() << ">";
+            os << (opt.is_mandatory() ? "" : "]");
         }
-        std::cout << "\n\nParameters:\n";
+        os << "\n\nParameters:\n";
         for (auto& opt : _options) {
-            std::cout << "* ";
+            os << "* ";
             bool has_both_options = opt.has_short_option() && opt.has_long_option();
-            if (opt.has_short_option()) std::cout << "-" << opt.get_short_option();
-            if (has_both_options) std::cout << " | ";
-            if (opt.has_long_option()) std::cout << "--" << opt.get_long_option();
-            if (opt.has_description()) std::cout << " : " << opt.get_description();
-            std::cout << "\n";
+            if (opt.has_short_option()) os << "-" << opt.get_short_option();
+            if (has_both_options) os << " | ";
+            if (opt.has_long_option()) os << "--" << opt.get_long_option();
+            if (opt.has_description()) os << " : " << opt.get_description();
+            os << "\n";
         }
     }
 
