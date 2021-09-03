@@ -33,7 +33,6 @@
 #pragma once
 
 #include <algorithm>
-#include <cassert>
 #include <cctype>
 #include <exception>
 #include <iomanip>
@@ -395,7 +394,7 @@ class argparser {
             throw std::logic_error("Trying to print help while not all options added are valid");
         }
         base::sort(_options);
-        if (errors != nullptr) {
+        if (errors != nullptr && !errors->empty()) {
             os << "Errors while parsing commandline: \n";
             for (auto& error : *errors) {
                 os << "* " << error << "\n";
@@ -430,10 +429,11 @@ class argparser {
         int i = -1;
         for (auto& opt : _options) {
             ++i;
-            if (!opt.has_description()) continue;
-            size_t gap = max - params[i].str().size();
-            std::string gapstr(gap, ' ');
-            params[i] << gapstr << " : " << opt.get_description();
+            if (opt.has_description()) {
+                size_t gap = max - params[i].str().size();
+                std::string gapstr(gap, ' ');
+                params[i] << gapstr << " : " << opt.get_description();
+            }
             os << params[i].str() << "\n";
         }
     }
