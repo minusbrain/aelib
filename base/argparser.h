@@ -25,7 +25,6 @@
 
 /*
  FIXME: Move from header only to cpp
- FIXME: User Documentation
  FIXME: positional arguments
  FIXME: Sub commands
 */

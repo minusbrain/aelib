@@ -24,7 +24,7 @@
  */
 #include <base/argparser.h>
 
-#include <exception>
+#include <cassert>
 
 #include "gtest/gtest.h"
 
@@ -518,4 +518,39 @@ TEST(Argparser, TryToParseStringAsInt_ExpectError) {
     EXPECT_FALSE(parsed.success());
     EXPECT_FALSE(parsed.has_option("number"));
     EXPECT_THROW(std::get<int>(parsed["number"]), std::exception);
+}
+
+TEST(Argparser, ReadmeExample_ExpectNoErrors) {
+    std::vector<std::string> args{"myapp", "--cfg", "/home/me/.myapp", "-j8"};
+
+    try {
+        // Construct a parser for program 'myapp'
+        argparser parser{"myapp"};
+        // Prepare parser with intended options
+        parser.add_option("configfile")
+            .short_option('c')
+            .long_option("cfg")
+            .default_value("/etc/myapp.conf")
+            .description("Location of configuration file to use");
+        parser.add_option("verbose").short_option('v').long_option("verbose").type(aot::FLAG).description(
+            "Activate more verbose output");
+        parser.add_option("threads").short_option('j').type(aot::INT).mandatory().description(
+            "Number of threads that shall be used for processing");
+
+        // Checks for any logical errors in defined options
+        assert(parser.all_options_valid());
+
+        // Parse command line input
+        auto parsed_args = parser.parse(args);
+
+        if (!parsed_args.success()) {
+            parser.print_help(std::cout, &parsed_args.get_errors());
+            return;
+        }
+
+        std::cout << "Using configfile: " << std::get<std::string>(parsed_args["configfile"]) << std::endl;
+        std::cout << "All parsed parameters: " << parsed_args.get_options() << std::endl;
+    } catch (const std::exception& ex) {
+        std::cout << "Parsing error: " << ex.what() << std::endl;
+    }
 }
