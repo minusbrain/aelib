@@ -160,26 +160,46 @@ void sort(std::list<X>& container, Compare comp) {
 
 template <class T, class UnaryPredicate>
 int count_if(T& container, UnaryPredicate pred) {
-    return count_if(container.cbegin(), container.cend(), pred);
+    return std::count_if(container.cbegin(), container.cend(), pred);
 }
 
 template <class T, class UnaryPredicate>
 typename T::iterator remove_if(T& container, UnaryPredicate pred) {
-    return remove_if(container.begin(), container.end(), pred);
+    return std::remove_if(container.begin(), container.end(), pred);
 }
 
 template <class T, class U>
 typename T::iterator find(T& container, const U& value) {
-    return find(container.begin(), container.end(), value);
+    return std::find(container.begin(), container.end(), value);
 }
 
 template <class T, class UnaryPredicate>
 typename T::iterator find_if(T& container, UnaryPredicate pred) {
-    return find_if(container.begin(), container.end(), pred);
+    return std::find_if(container.begin(), container.end(), pred);
+}
+
+template <class T, class U>
+typename T::const_iterator find(const T& container, const U& value) {
+    return std::find(container.cbegin(), container.cend(), value);
+}
+
+template <class T, class UnaryPredicate>
+typename T::const_iterator find_if(const T& container, UnaryPredicate pred) {
+    return std::find_if(container.cbegin(), container.cend(), pred);
+}
+
+template <class T>
+typename T::iterator adjacent_find(T& container) {
+    return std::adjacent_find(container.begin(), container.end());
+}
+
+template <class T>
+typename T::const_iterator adjacent_find(const T& container) {
+    return std::adjacent_find(container.cbegin(), container.cend());
 }
 
 template <class T, class UnaryFunction>
 UnaryFunction for_each(T& container, UnaryFunction func) {
-    return for_each(container.begin(), container.end(), func);
+    return std::for_each(container.begin(), container.end(), func);
 }
 }  // namespace base
