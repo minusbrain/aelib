@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cassert>
 #include <cctype>
 #include <exception>
@@ -334,6 +335,10 @@ class argparser {
     std::string get_app_name() const { return _app_name; }
 
     cl_option& add_option(std::string option_name) {
+        if (base::find_if(_options, [&option_name](auto& opt) { return opt.get_name() == option_name; }) !=
+            _options.end()) {
+            throw std::logic_error("Trying to add multiple options with name " + option_name);
+        }
         _options.emplace_back(cl_option{option_name});
         return _options.back();
     }
@@ -437,9 +442,43 @@ class argparser {
     }
 
     std::vector<cl_option> get_options() const { return _options; }
-    bool all_options_valid() const {
-        return base::count_if(_options, [](auto& opt) { return opt.is_valid(); }) == (int)_options.size();
+
+    std::string get_invalidity_reason() const {
+        std::stringstream err;
+
+        if (base::count_if(_options, [](auto& opt) { return opt.is_valid(); }) != (int)_options.size()) {
+            const auto& it = base::find_if(_options, [](auto& opt) { return !opt.is_valid(); });
+            err << "There are invalid options. First invalid option found: " << *it;
+            return err.str();
+        }
+
+        std::vector<char> short_options;
+        std::vector<std::string> long_options;
+
+        for (auto& opt : _options) {
+            if (opt.has_short_option()) short_options.push_back(opt.get_short_option());
+            if (opt.has_long_option()) long_options.push_back(opt.get_long_option());
+        }
+
+        base::sort(short_options);
+        base::sort(long_options);
+
+        auto same_short = base::adjacent_find(short_options);
+        if (same_short != short_options.end()) {
+            err << "There are multiple short_options with same name. First instance found: '" << *same_short << "'";
+            return err.str();
+        }
+
+        auto same_long = base::adjacent_find(long_options);
+        if (same_long != long_options.end()) {
+            err << "There are multiple long_options with same name. First instance found: '" << *same_long << "'";
+            return err.str();
+        }
+
+        return err.str();
     }
+
+    bool all_options_valid() const { return get_invalidity_reason().empty(); }
 
     // cl_parser.add_parameters("words", "List of words");
 

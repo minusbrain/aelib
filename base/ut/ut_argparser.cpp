@@ -398,19 +398,51 @@ TEST(Argparser,
     EXPECT_EQ(8, std::get<int>(parsed["number"]));
 }
 
-// Test
-// add_option("bla").default("Hallo");
-// Expect type = String
-// Same for float und int
+TEST(Argparser, AutoDeriveOptionTypeString) {
+    argparser parser{"test"};
+    auto& opt = parser.add_option("number").short_option('n').default_value("Ten");
 
-// Test
-// add_option("name")
-// EXPECT_THROW add_option("name")
+    EXPECT_EQ(aot::STRING, opt.get_type());
+    EXPECT_TRUE(parser.all_options_valid());
+}
 
-// Test
-// add_option().long_option("bla")
-// EXPECT_THROW add_option().long_option("bla")
+TEST(Argparser, AutoDeriveOptionTypeFloat) {
+    argparser parser{"test"};
+    auto& opt = parser.add_option("number").short_option('n').default_value(12.34f);
 
-// Test
-// add_option().short_option('b')
-// EXPECT_THROW add_option().short_option('b')
+    EXPECT_EQ(aot::FLOAT, opt.get_type());
+    EXPECT_TRUE(parser.all_options_valid());
+}
+
+TEST(Argparser, AutoDeriveOptionTypeInt) {
+    argparser parser{"test"};
+    auto& opt = parser.add_option("number").short_option('n').default_value(42);
+
+    EXPECT_EQ(aot::INT, opt.get_type());
+    EXPECT_TRUE(parser.all_options_valid());
+}
+
+TEST(Argparser, DisallowMultipleOptionsWithSameName) {
+    argparser parser{"test"};
+    parser.add_option("number").short_option('n').default_value(42);
+    EXPECT_THROW(parser.add_option("number").short_option('i').default_value(42), std::exception);
+
+    // As add_option failed/threw error no invalid option has been actually added to parser
+    EXPECT_TRUE(parser.all_options_valid());
+}
+
+TEST(Argparser, DisallowMultipleOptionsWithSameShortOption) {
+    argparser parser{"test"};
+    parser.add_option("number").short_option('n').default_value(42);
+    parser.add_option("another_number_with_same_shortoption").short_option('n').default_value(42);
+
+    EXPECT_FALSE(parser.all_options_valid());
+}
+
+TEST(Argparser, DisallowMultipleOptionsWithSameLongOption) {
+    argparser parser{"test"};
+    parser.add_option("number").long_option("number").default_value(42);
+    parser.add_option("another_number_with_same_longoption").long_option("number").default_value(42);
+
+    EXPECT_FALSE(parser.all_options_valid());
+}
