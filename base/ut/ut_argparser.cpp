@@ -446,3 +446,76 @@ TEST(Argparser, DisallowMultipleOptionsWithSameLongOption) {
 
     EXPECT_FALSE(parser.all_options_valid());
 }
+
+TEST(Argparser, SetDefaultToIntWhileTypeIsString_ExpectThrowAndInvalid) {
+    argparser parser{"test"};
+    EXPECT_THROW(parser.add_option("number").long_option("number").type(aot::STRING).default_value(42), std::exception);
+
+    EXPECT_FALSE(parser.all_options_valid());
+}
+
+TEST(Argparser, SetDefaultToFloatWhileTypeIsString_ExpectThrowAndInvalid) {
+    argparser parser{"test"};
+    EXPECT_THROW(parser.add_option("number").long_option("number").type(aot::STRING).default_value(42.56f),
+                 std::exception);
+
+    EXPECT_FALSE(parser.all_options_valid());
+}
+
+TEST(Argparser, SetDefaultToStringWhileTypeIsInt_ExpectThrowAndInvalid) {
+    argparser parser{"test"};
+    EXPECT_THROW(parser.add_option("number").long_option("number").type(aot::INT).default_value("Hello"),
+                 std::exception);
+
+    EXPECT_FALSE(parser.all_options_valid());
+}
+
+TEST(Argparser, SetDefaultToFloatWhileTypeIsInt_ExpectThrowAndInvalid) {
+    argparser parser{"test"};
+    EXPECT_THROW(parser.add_option("number").long_option("number").type(aot::INT).default_value(42.56f),
+                 std::exception);
+
+    EXPECT_FALSE(parser.all_options_valid());
+}
+TEST(Argparser, SetDefaultToStringWhileTypeIsFloat_ExpectThrowAndInvalid) {
+    argparser parser{"test"};
+    EXPECT_THROW(parser.add_option("number").long_option("number").type(aot::FLOAT).default_value("Hello"),
+                 std::exception);
+
+    EXPECT_FALSE(parser.all_options_valid());
+}
+
+TEST(Argparser, SetDefaultToIntWhileTypeIsFloat_ExpectThrowAndInvalid) {
+    argparser parser{"test"};
+    EXPECT_THROW(parser.add_option("number").long_option("number").type(aot::FLOAT).default_value(42), std::exception);
+
+    EXPECT_FALSE(parser.all_options_valid());
+}
+
+TEST(Argparser, TryToParseStringAsFloat_ExpectError) {
+    argparser parser{"test"};
+    parser.add_option("number").short_option('n').type(aot::FLOAT);
+
+    EXPECT_TRUE(parser.all_options_valid());
+
+    std::vector<std::string> args{"test", "-n", "Test"};
+    auto parsed = parser.parse(args);
+
+    EXPECT_FALSE(parsed.success());
+    EXPECT_FALSE(parsed.has_option("number"));
+    EXPECT_THROW(std::get<float>(parsed["number"]), std::exception);
+}
+
+TEST(Argparser, TryToParseStringAsInt_ExpectError) {
+    argparser parser{"test"};
+    parser.add_option("number").short_option('n').type(aot::INT);
+
+    EXPECT_TRUE(parser.all_options_valid());
+
+    std::vector<std::string> args{"test", "-n", "Test"};
+    auto parsed = parser.parse(args);
+
+    EXPECT_FALSE(parsed.success());
+    EXPECT_FALSE(parsed.has_option("number"));
+    EXPECT_THROW(std::get<int>(parsed["number"]), std::exception);
+}

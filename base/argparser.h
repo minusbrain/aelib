@@ -151,6 +151,7 @@ class cl_option {
 
     cl_option& default_value(int val) {
         if (_option_type != argparser_option_type::UNDECIDED && _option_type != argparser_option_type::INT) {
+            _valid = false;
             throw std::invalid_argument(
                 "Trying to set default value to INT even though its already defined as a different type.");
         }
@@ -161,6 +162,7 @@ class cl_option {
 
     cl_option& default_value(float val) {
         if (_option_type != argparser_option_type::UNDECIDED && _option_type != argparser_option_type::FLOAT) {
+            _valid = false;
             throw std::invalid_argument(
                 "Trying to set default value to FLOAT even though its already defined as a different type.");
         }
@@ -229,12 +231,7 @@ class cl_option {
         return *this;
     }
 
-    cl_option& mandatory() {
-        _mandatory = true;
-        return *this;
-    }
-
-    cl_option& mandatory(bool val) {
+    cl_option& mandatory(bool val = true) {
         _mandatory = val;
         return *this;
     }
