@@ -10,7 +10,10 @@ SET(GTEST_LIBS_TO_LINK GTest::gtest GTest::gmock GTest::gmock_main)
 
 include_directories(${PROJECT_SOURCE_DIR} ${GTEST_INCLUDE_DIRS} ${Poco_INCLUDE_DIRS})
 
-SET(CMAKE_CXX_FLAGS "-g -O3 -Wall -Werror -Wextra -Wpedantic")
+
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -coverage -fprofile-arcs -ftest-coverage")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+SET(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -Wpedantic")
 
 add_subdirectory (ai)
 add_subdirectory (sm)
