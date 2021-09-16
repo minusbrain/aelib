@@ -86,7 +86,7 @@ TEST(SortedFind, LargeVector_FindNonExistingValue_ExpectEndIterator) {
     std::generate(dut.begin(), dut.end(),
                   std::rand);  // Using the C function rand()
 
-    std::remove(dut.begin(), dut.end(), 3744);
+    (void)std::remove(dut.begin(), dut.end(), 3744);
 
     base::sort(dut);
 
