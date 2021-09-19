@@ -15,14 +15,12 @@ SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -coverage -fprofile-arcs -ftest-coverage")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
 SET(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -Wpedantic")
 
-add_subdirectory (ai)
 add_subdirectory (sm)
 add_subdirectory (tree)
 add_subdirectory (base)
 
 add_custom_target(aelib_ut_all  COMMAND ${CMAKE_CTEST_COMMAND} -V)
 add_dependencies(aelib_ut_all
-                    aelib_ut_ai
                     aelib_ut_sm
                     aelib_ut_tree
                     aelib_ut_base

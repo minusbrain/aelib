@@ -5,6 +5,7 @@ SET (THIS_SRC
         flag_mask.h
         improve_containers.h
         sorted_find.h
+        scope_guard.h
 
         manager_pattern.h
         registry_pattern.h
@@ -12,10 +13,7 @@ SET (THIS_SRC
         helpers.h
         observer.h
 
-        dummy.cpp
+        astar.h
     )
-
-add_library(aelib_base ${THIS_SRC})
-set_property(TARGET aelib_base PROPERTY CXX_STANDARD 17)
 
 add_subdirectory (ut)

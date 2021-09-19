@@ -1,7 +1,7 @@
 /**
  * @author     Andreas Evers
  *
- * @copyright  Copyright © 2020 Andreas Evers
+ * @copyright  Copyright © 2021 Andreas Evers
  *
  * MIT License
  *
@@ -22,4 +22,36 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#include "astar.h"
+
+namespace base {
+
+template <typename T_callback>
+class scope_guard {
+   public:
+    scope_guard(T_callback guard) : _guard(guard) {}
+    scope_guard() = delete;
+
+    ~scope_guard() { _guard(); }
+
+   private:
+    T_callback _guard;
+};
+
+template <typename T_callback>
+class armed_scope_guard {
+   public:
+    armed_scope_guard(T_callback guard) : _guard(guard) {}
+    armed_scope_guard() = delete;
+
+    ~armed_scope_guard() {
+        if (armed) _guard();
+    }
+
+    void disarm() { armed = false; }
+
+   private:
+    T_callback _guard;
+    bool armed = true;
+};
+
+}  // namespace base
