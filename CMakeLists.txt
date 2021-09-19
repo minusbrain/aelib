@@ -8,7 +8,7 @@ find_package(Threads REQUIRED)
 find_package(GTest REQUIRED CONFIG)
 SET(GTEST_LIBS_TO_LINK GTest::gtest GTest::gmock GTest::gmock_main)
 
-include_directories(${PROJECT_SOURCE_DIR} ${GTEST_INCLUDE_DIRS} ${Poco_INCLUDE_DIRS})
+include_directories(${PROJECT_SOURCE_DIR} ${GTEST_INCLUDE_DIRS})
 
 
 SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -coverage -fprofile-arcs -ftest-coverage")
