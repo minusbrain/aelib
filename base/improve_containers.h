@@ -169,6 +169,11 @@ typename T::iterator remove_if(T& container, UnaryPredicate pred) {
 }
 
 template <class T, class U>
+auto copy(T& destination, U& source) {
+    return std::copy(source.begin(), source.end(), std::back_inserter(destination));
+}
+
+template <class T, class U>
 typename T::iterator find(T& container, const U& value) {
     return std::find(container.begin(), container.end(), value);
 }
