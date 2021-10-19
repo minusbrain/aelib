@@ -520,8 +520,28 @@ TEST(Argparser, TryToParseStringAsInt_ExpectError) {
     EXPECT_THROW(std::get<int>(parsed["number"]), std::exception);
 }
 
+TEST(Argparser, TryToParseArgcArgv_ExpectOk) {
+    argparser parser{"test"};
+    parser.add_option("number").short_option('n').type(aot::INT);
+
+    EXPECT_TRUE(parser.all_options_valid());
+
+    int argc = 3;
+    char arg1[5] = "test";
+    char arg2[3] = "-n";
+    char arg3[2] = "5";
+    char *argv[3] = {arg1, arg2, arg3};
+
+    auto parsed = parser.parse(argc, argv);
+
+    EXPECT_TRUE(parsed.success());
+    EXPECT_EQ(0, parsed.get_errors().size());
+    EXPECT_TRUE(parsed.has_option("number"));
+    EXPECT_EQ(5, std::get<int>(parsed["number"]));
+}
+
 TEST(Argparser, ReadmeExample_ExpectNoErrors) {
-    std::vector<std::string> args{"myapp", "--cfg", "/home/me/.myapp", "-j8"};
+    std::vector<std::string> args{"/bin/myapp", "--cfg", "/home/me/.myapp", "-j8"};
 
     try {
         // Construct a parser for program 'myapp'
@@ -554,3 +574,40 @@ TEST(Argparser, ReadmeExample_ExpectNoErrors) {
         std::cout << "Parsing error: " << ex.what() << std::endl;
     }
 }
+
+/* 
+TEST(Argparser, ReadmeExampleTemplates_ExpectNoErrors) {
+    std::vector<std::string> args{"/bin/myapp", "--cfg", "/home/me/.myapp", "-j8"};
+
+    try {
+        // Construct a parser for program 'myapp'
+        argparser parser{"myapp"};
+        // Prepare parser with intended options
+        parser.add_option<std::string>("configfile")
+            .short_option('c')
+            .long_option("cfg")
+            .default_value("/etc/myapp.conf")
+            .description("Location of configuration file to use");
+        parser.add_option<bool>("verbose").short_option('v').long_option("verbose").description(
+            "Activate more verbose output");
+        parser.add_option<int>("threads").short_option('j').mandatory().description(
+            "Number of threads that shall be used for processing");
+
+        // Checks for any logical errors in defined options
+        assert(parser.all_options_valid());
+
+        // Parse command line input
+        auto parsed_args = parser.parse(args);
+
+        if (!parsed_args.success()) {
+            parser.print_help(std::cout, &parsed_args.get_errors());
+            return;
+        }
+
+        std::cout << "Using configfile: " << std::get<std::string>(parsed_args["configfile"]) << std::endl;
+        std::cout << "All parsed parameters: " << parsed_args.get_options() << std::endl;
+    } catch (const std::exception& ex) {
+        std::cout << "Parsing error: " << ex.what() << std::endl;
+    }
+}
+*/
