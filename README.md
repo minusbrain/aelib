@@ -27,30 +27,30 @@ int main(int argc, char** argv) {
         // Construct a parser for program 'myapp'
         argparser parser{"myapp"};
         // Prepare parser with intended options
-        parser.add_option("configfile").short_option('c').long_option("cfg").default_value("/etc/myapp.conf")
+        parser.add_option<std::string>("configfile")
+            .short_option('c')
+            .long_option("cfg")
+            .default_value(std::string("/etc/myapp.conf"))
             .description("Location of configuration file to use");
-        parser.add_option("verbose").short_option('v').long_option("verbose").type(aot::FLAG)
-            ..description("Activate more verbose output");
-        parser.add_option("threads").short_option('j').type(aot::INT).mandatory()
-            .description("Number of threads that shall be used for processing");
+        parser.add_option<bool>("verbose").short_option('v').long_option("verbose").description(
+            "Activate more verbose output");
+        parser.add_option<int>("threads").short_option('j').mandatory().description(
+            "Number of threads that shall be used for processing");
 
         // Checks for any logical errors in defined options
         assert(parser.all_options_valid());
 
         // Parse command line input
-        auto parsed_args = parser.parse(argc, argv);
+        auto parsed_args = parser.parse(args);
 
         if (!parsed_args.success()) {
-            // In case of error print help but with highlighting of parsing errors
             parser.print_help(std::cout, &parsed_args.get_errors());
-            return -1;
+            return;
         }
 
-        // Access data
-        std::cout << "Using configfile: " << std::get<std::string>(parsed_args["configfile"]) << std::endl;
+        std::cout << "Using configfile: " << parsed_args.get<std::string>("configfile") << std::endl;
         std::cout << "All parsed parameters: " << parsed_args.get_options() << std::endl;
     } catch (const std::exception& ex) {
-        // In case of fatal error print error
         std::cout << "Parsing error: " << ex.what() << std::endl;
     }
 }
@@ -58,10 +58,10 @@ int main(int argc, char** argv) {
 ### Support
 
 Currently the following option types are supported:
-* STRING     -> Expects and returns a std::string
-* INT        -> Expects and returns a decimal integer
-* FLOAT      -> Expects and returns a decimal float
-* FLAG       -> Expects no value but returns the presence (true) or absence (false) of a parameter
+* std::string  -> Expects and returns a std::string
+* int          -> Expects and returns a decimal integer
+* float/double -> Expects and returns a decimal floating point value
+* bool         -> Expects no value but returns the presence (true) or absence (false) of a parameter
 
 The following syntax variants are allowed for parameters:
 * --option value

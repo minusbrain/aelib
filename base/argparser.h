@@ -27,12 +27,12 @@
  FIXME: Move from header only to cpp
  FIXME: positional arguments
  FIXME: Sub commands
+ FIXME: Custom types
 */
 
 #pragma once
 
 #include <algorithm>
-#include <cctype>
 #include <exception>
 #include <iomanip>
 #include <iostream>
@@ -42,7 +42,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <system_error>
+#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -51,20 +51,15 @@
 
 namespace base {
 
-using T_option_value = std::variant<std::nullopt_t, int, float, std::string, bool>;
-using cl_parsed_options = std::map<std::string, T_option_value>;
-
-enum class argparser_option_type { UNDECIDED, INT, FLOAT, STRING, FLAG };
-
 class cl_option;
+
+using T_strict_option_type = std::variant<std::nullopt_t, bool, int, float, double, std::string>;
+using T_parsed_option_map = std::map<std::string, T_strict_option_type>;
+
 }  // namespace base
 
 // Forward declarations stream output helper
 std::ostream& operator<<(std::ostream& os, const base::cl_option& opt);
-
-namespace std {
-std::ostream& operator<<(std::ostream& os, const base::T_option_value& val);
-}
 
 namespace base {
 
@@ -77,12 +72,30 @@ class argparse_result {
     ~argparse_result() = default;
 
     bool success() const { return _success; }
-    T_option_value operator[](const std::string& index) const { return _parsed_options.at(index); }
+
+    template <typename T>
+    T get(const std::string& index) {
+        T temp{};
+        try {
+            T_strict_option_type opt = _parsed_options.at(index);
+            temp = std::get<T>(opt);
+        } catch (const std::out_of_range& ex) {
+            throw std::logic_error{"Option " + index + " not found. " + ex.what()};
+        } catch (const std::bad_variant_access& ex) {
+            throw std::logic_error{"Used wrong type to get option " + index + ". " + ex.what()};
+        } catch (const std::exception& ex) {
+            throw std::logic_error{"Unknown error while getting option " + index + ". " + ex.what()};
+        }
+
+        return temp;
+    }
+
+    T_strict_option_type operator[](const std::string& index) const { return _parsed_options.at(index); }
     bool has_option(const std::string& index) const { return _parsed_options.find(index) != _parsed_options.end(); }
 
-    const cl_parsed_options& get_options() { return _parsed_options; }
+    const T_parsed_option_map& get_options() { return _parsed_options; }
 
-    void insert(std::string key, T_option_value value) { _parsed_options.insert_or_assign(key, value); }
+    void insert(std::string key, T_strict_option_type value) { _parsed_options.insert_or_assign(key, value); }
     void add_error(std::string error, bool fatal = false) {
         _errors.push_back(error);
         if (fatal) _success = false;
@@ -91,7 +104,7 @@ class argparse_result {
     const std::vector<std::string>& get_errors() const { return _errors; }
 
    private:
-    cl_parsed_options _parsed_options;
+    T_parsed_option_map _parsed_options;
     std::vector<std::string> _errors;
     bool _success = true;
 };
@@ -126,10 +139,10 @@ class cl_option {
     cl_option(std::string option_name)
         : _short_option(),
           _long_option(),
-          _option_type(argparser_option_type::UNDECIDED),
           _option_name(option_name),
           _option_description(),
           _default_value(std::nullopt),
+          _type_indicator(std::nullopt),
           _valid(true),
           _mandatory(false) {}
     ~cl_option() = default;
@@ -147,45 +160,29 @@ class cl_option {
 
     std::string get_name() const { return _option_name; }
 
-    cl_option& default_value(int val) {
-        if (_option_type != argparser_option_type::UNDECIDED && _option_type != argparser_option_type::INT) {
+    cl_option& default_value(T_strict_option_type val) {
+        if (val.index() != _type_indicator.index()) {
             _valid = false;
-            throw std::invalid_argument(
-                "Trying to set default value to INT even though its already defined as a different type.");
+            throw std::logic_error{"Default value type does not match option type for option " + get_name()};
         }
         _default_value = val;
-        _option_type = argparser_option_type::INT;
         return *this;
     }
 
-    cl_option& default_value(float val) {
-        if (_option_type != argparser_option_type::UNDECIDED && _option_type != argparser_option_type::FLOAT) {
-            _valid = false;
-            throw std::invalid_argument(
-                "Trying to set default value to FLOAT even though its already defined as a different type.");
-        }
-        _default_value = val;
-        _option_type = argparser_option_type::FLOAT;
+    template <typename T>
+    cl_option& set_type() {
+        _type_indicator = T{};
+
+        if (std::is_same<bool, T>::value) _default_value.emplace<bool>(false);
+
         return *this;
     }
 
-    cl_option& default_value(std::string val) {
-        if (_option_type != argparser_option_type::UNDECIDED && _option_type != argparser_option_type::STRING) {
-            _valid = false;
-            throw std::invalid_argument(
-                "Trying to set default value to STRING even though its already defined as a different type.");
-        }
-        _default_value = val;
-        _option_type = argparser_option_type::STRING;
-        return *this;
-    }
+    T_strict_option_type get_type() { return _type_indicator; }
 
     bool has_default_value() const { return std::holds_alternative<std::nullopt_t>(_default_value) == false; }
-    T_option_value get_default_value() const { return _default_value; }
-    bool get_default_value_as_flag() const { return std::get<bool>(_default_value); }
-    int get_default_value_as_int() const { return std::get<int>(_default_value); }
-    float get_default_value_as_float() const { return std::get<float>(_default_value); }
-    std::string get_default_value_as_string() const { return std::get<std::string>(_default_value); }
+
+    T_strict_option_type get_default_value() const { return _default_value; }
 
     cl_option& short_option(char short_option) {
         if (!std::isalnum(short_option)) {
@@ -221,14 +218,6 @@ class cl_option {
     bool has_description() const { return _option_description.has_value(); }
     std::string get_description() const { return _option_description.value(); }
 
-    cl_option& type(argparser_option_type type) {
-        _option_type = type;
-        if (_option_type == argparser_option_type::FLAG && !has_default_value()) {
-            _default_value = false;
-        }
-        return *this;
-    }
-
     cl_option& mandatory(bool val = true) {
         _mandatory = val;
         return *this;
@@ -236,13 +225,34 @@ class cl_option {
 
     bool is_mandatory() const { return _mandatory; }
 
-    argparser_option_type get_type() const { return _option_type; }
-    bool is_type_decided() const { return _option_type != argparser_option_type::UNDECIDED; }
-
     bool is_valid() const {
         if (_valid) {
-            return (is_type_decided() && (has_short_option() || has_long_option()) &&
-                    !(is_mandatory() && _option_type == argparser_option_type::FLAG));
+            if (!(has_short_option() || has_long_option())) {
+                std::cout << get_name() << " Has neither short nor long option.\n";
+                return false;
+            }
+
+            if (std::holds_alternative<std::nullopt_t>(_type_indicator)) {
+                std::cout << get_name() << " Type is not decided.\n";
+                return false;
+            }
+
+            if (is_mandatory() && std::holds_alternative<bool>(_type_indicator)) {
+                std::cout << get_name() << " Boolean option is mandatory\n";
+                return false;
+            }
+
+            if (!std::holds_alternative<std::nullopt_t>(_default_value) &&
+                _default_value.index() != _type_indicator.index()) {
+                std::cout << get_name() << " Default value type does not match option type\n";
+                return false;
+            }
+
+            // return ((has_short_option() || has_long_option()) &&
+            //        std::holds_alternative<std::nullopt_t>(_default_value) == false &&
+            //        !(is_mandatory() && std::holds_alternative<bool>(_default_value)));
+
+            return true;
         }
         return _valid;
     }
@@ -264,7 +274,7 @@ class cl_option {
         } else if (sol == SHORT_OPTION && args[pos].size() > 2) {
             std::copy(args[pos].begin() + 2, args[pos].end(), std::back_inserter(value));
         }
-        if (get_type() == argparser_option_type::FLAG) {
+        if (std::holds_alternative<bool>(_type_indicator)) {
             ctxt._parsed.insert(get_name(), true);
             ctxt.remove_from_missing_mandatory_options(get_name());
         } else {
@@ -276,7 +286,7 @@ class cl_option {
                 if (value.empty()) {
                     value = args[++pos];
                 }
-                if (get_type() == argparser_option_type::FLOAT) {
+                if (std::holds_alternative<float>(_type_indicator) || std::holds_alternative<double>(_type_indicator)) {
                     try {
                         ctxt._parsed.insert(get_name(), std::stof(value));
                         ctxt.remove_from_missing_mandatory_options(get_name());
@@ -286,17 +296,17 @@ class cl_option {
                             << "' as expected float. Error: " << ex.what();
                         ctxt._parsed.add_error(err.str(), true);
                     }
-                } else if (get_type() == argparser_option_type::INT) {
+                } else if (std::holds_alternative<int>(_type_indicator)) {
                     try {
                         ctxt._parsed.insert(get_name(), std::stoi(value));
                         ctxt.remove_from_missing_mandatory_options(get_name());
                     } catch (const std::invalid_argument& ex) {
                         std::stringstream err;
                         err << "Could not parse '" << value << "' for option '" << get_name()
-                            << "' as expected int. Error: " << ex.what();
+                            << "' as expected integer type. Error: " << ex.what();
                         ctxt._parsed.add_error(err.str(), true);
                     }
-                } else if (get_type() == argparser_option_type::STRING) {
+                } else {
                     ctxt._parsed.insert(get_name(), value);
                     ctxt.remove_from_missing_mandatory_options(get_name());
                 }
@@ -307,10 +317,10 @@ class cl_option {
    private:
     std::optional<char> _short_option;
     std::optional<std::string> _long_option;
-    argparser_option_type _option_type;
     std::string _option_name;
     std::optional<std::string> _option_description;
-    T_option_value _default_value;
+    T_strict_option_type _default_value;
+    T_strict_option_type _type_indicator;
     bool _valid;
     bool _mandatory;
 };
@@ -329,13 +339,14 @@ class argparser {
 
     std::string get_app_name() const { return _app_name; }
 
+    template <typename T>
     cl_option& add_option(std::string option_name) {
         if (base::find_if(_options, [&option_name](auto& opt) { return opt.get_name() == option_name; }) !=
             _options.end()) {
             throw std::logic_error("Trying to add multiple options with name " + option_name);
         }
         _options.emplace_back(cl_option{option_name});
-        return _options.back();
+        return _options.back().set_type<T>();
     }
 
     argparse_result parse(int argc, char** argv) {
@@ -407,7 +418,7 @@ class argparser {
             if (opt.has_short_option()) os << "-" << opt.get_short_option();
             if (has_both_options) os << "|";
             if (opt.has_long_option()) os << "--" << opt.get_long_option();
-            if (opt.get_type() != argparser_option_type::FLAG) os << " <" << opt.get_name() << ">";
+            if (!std::holds_alternative<bool>(opt.get_type())) os << " <" << opt.get_name() << ">";
             os << (opt.is_mandatory() ? "" : "]");
         }
         os << "\n\nParameters:\n";
@@ -418,7 +429,7 @@ class argparser {
             if (opt.has_short_option()) params.back() << "-" << opt.get_short_option();
             if (has_both_options) params.back() << " | ";
             if (opt.has_long_option()) params.back() << "--" << opt.get_long_option();
-            if (opt.get_type() != argparser_option_type::FLAG) params.back() << " <" << opt.get_name() << ">";
+            if (!std::holds_alternative<bool>(opt.get_type())) params.back() << " <" << opt.get_name() << ">";
         }
         size_t max = 0;
         for (auto& paramstr : params) {
@@ -506,13 +517,15 @@ class argparser {
 }  // namespace base
 
 namespace std {
-inline std::ostream& operator<<(std::ostream& os, const base::T_option_value& val) {
+inline std::ostream& operator<<(std::ostream& os, const base::T_strict_option_type& val) {
     std::visit(
         [&os](auto&& arg) {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, int>)
                 os << arg;
             else if constexpr (std::is_same_v<T, float>)
+                os << arg;
+            else if constexpr (std::is_same_v<T, double>)
                 os << arg;
             else if constexpr (std::is_same_v<T, std::string>)
                 os << std::quoted(arg);
@@ -527,7 +540,7 @@ inline std::ostream& operator<<(std::ostream& os, const base::T_option_value& va
 }
 }  // namespace std
 
-inline std::ostream& operator<<(std::ostream& os, const base::cl_option& opt) {
+std::ostream& operator<<(std::ostream& os, const base::cl_option& opt) {
     os << "Command Line Option ('" << opt.get_name() << "'";
     os << ", Status=" << (opt.is_valid() ? "valid" : "invalid");
     if (opt.has_short_option()) {
