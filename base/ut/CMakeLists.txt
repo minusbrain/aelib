@@ -9,6 +9,7 @@ SET (THIS_SRC
         ut_argparser.cpp
         ut_astar.cpp
         ut_scope_guard.cpp
+        ut_conversion.cpp
     )
 
 # Improve containers and algorithms

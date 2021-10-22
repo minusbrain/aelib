@@ -6,14 +6,12 @@ SET (THIS_SRC
         improve_containers.h
         sorted_find.h
         scope_guard.h
-
         manager_pattern.h
         registry_pattern.h
-
         helpers.h
         observer.h
-
         astar.h
+        conversion.h
     )
 
 add_subdirectory (ut)
