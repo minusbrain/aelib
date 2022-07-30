@@ -119,7 +119,7 @@ class flag_mask {
      *
      * @return     true if flag is set, false if not
      */
-    bool check(const FLAG flag) { return value & (BASETYPE)flag; }
+    bool check(const FLAG flag) const { return value & (BASETYPE)flag; }
 
     /**
      * @brief      Check if all provided flags are set or not
@@ -150,6 +150,8 @@ class flag_mask {
      * @param[in]  newvalue  The new value to set the flagmask to
      */
     void raw_set(const BASETYPE newvalue) { value = newvalue; }
+
+    bool operator==(const flag_mask<FLAG>& other) const = default;
 
    private:
     BASETYPE value;

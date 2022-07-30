@@ -3,6 +3,7 @@ project (aelib)
 
 enable_testing()
 set(THREADS_PREFER_PTHREAD_FLAG ON)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Threads REQUIRED)
 find_package(GTest REQUIRED CONFIG)
