@@ -12,6 +12,7 @@ SET (THIS_SRC
         observer.h
         astar.h
         conversion.h
+        split.h
     )
 
 add_subdirectory (ut)

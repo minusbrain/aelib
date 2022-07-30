@@ -10,6 +10,7 @@ SET (THIS_SRC
         ut_astar.cpp
         ut_scope_guard.cpp
         ut_conversion.cpp
+        ut_split.cpp
     )
 
 # Improve containers and algorithms
