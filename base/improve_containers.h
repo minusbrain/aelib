@@ -93,6 +93,12 @@ inline std::vector<std::string> tokenize(const std::string& input, char seperato
     return tokens;
 }
 
+template <class T>
+inline std::vector<T>& push_back(std::vector<T>& target, const std::vector<T>& to_push) {
+    target.insert(target.end(), to_push.begin(), to_push.end());
+    return target;
+}
+
 }  // namespace base
 
 namespace std {
