@@ -59,7 +59,7 @@ using T_parsed_option_map = std::map<std::string, T_strict_option_type>;
 }  // namespace base
 
 // Forward declarations stream output helper
-std::ostream& operator<<(std::ostream& os, const base::cl_option& opt);
+inline std::ostream& operator<<(std::ostream& os, const base::cl_option& opt);
 
 namespace base {
 
@@ -92,6 +92,12 @@ class argparse_result {
 
     T_strict_option_type operator[](const std::string& index) const { return _parsed_options.at(index); }
     bool has_option(const std::string& index) const { return _parsed_options.find(index) != _parsed_options.end(); }
+    bool is_flag_set(const std::string& index) const {
+        if (has_option(index))
+            return std::get<bool>(_parsed_options.at(index));
+        else
+            return false;
+    }
 
     const T_parsed_option_map& get_options() { return _parsed_options; }
 
@@ -348,6 +354,8 @@ class argparser {
         _options.emplace_back(cl_option{option_name});
         return _options.back().set_type<T>();
     }
+
+    cl_option& add_flag(std::string option_name) { return add_option<bool>(option_name); }
 
     argparse_result parse(int argc, char** argv) {
         std::vector<std::string> args;

@@ -126,6 +126,48 @@ TEST(Argparser, LongFlag_ParserGettingCorrectInput_ExpectCorrectParsedArguments)
     EXPECT_FALSE(std::get<bool>(parsed2["verbose"]));
 }
 
+TEST(Argparser, ShortFlagConvenienceOption_SimpleParserGettingCorrectInput_ExpectCorrectParsedArguments) {
+    argparser parser{"test"};
+    parser.add_flag("verbose").short_option('v');
+
+    EXPECT_TRUE(parser.all_options_valid());
+
+    std::vector<std::string> args1{"test", "-v"};
+    auto parsed1 = parser.parse(args1);
+
+    EXPECT_TRUE(parsed1.success());
+    EXPECT_TRUE(parsed1.has_option("verbose"));
+    EXPECT_TRUE(parsed1.is_flag_set("verbose"));
+
+    std::vector<std::string> args2{"test"};
+    auto parsed2 = parser.parse(args2);
+
+    EXPECT_TRUE(parsed2.success());
+    EXPECT_TRUE(parsed2.has_option("verbose"));
+    EXPECT_FALSE(parsed2.is_flag_set("verbose"));
+}
+
+TEST(Argparser, LongFlagConvenienceOption_ParserGettingCorrectInput_ExpectCorrectParsedArguments) {
+    argparser parser{"test"};
+    parser.add_flag("verbose").long_option("verbose");
+
+    EXPECT_TRUE(parser.all_options_valid());
+
+    std::vector<std::string> args1{"test", "--verbose"};
+    auto parsed1 = parser.parse(args1);
+
+    EXPECT_TRUE(parsed1.success());
+    EXPECT_TRUE(parsed1.has_option("verbose"));
+    EXPECT_TRUE(parsed1.is_flag_set("verbose"));
+
+    std::vector<std::string> args2{"test"};
+    auto parsed2 = parser.parse(args2);
+
+    EXPECT_TRUE(parsed2.success());
+    EXPECT_TRUE(parsed2.has_option("verbose"));
+    EXPECT_FALSE(parsed2.is_flag_set("verbose"));
+}
+
 TEST(Argparser, ShortInt_SimpleParserGettingCorrectInput_ExpectCorrectParsedArguments) {
     argparser parser{"test"};
     parser.add_option<int>("number").short_option('n');
