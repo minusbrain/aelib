@@ -179,6 +179,11 @@ auto copy(T& destination, U& source) {
     return std::copy(source.begin(), source.end(), std::back_inserter(destination));
 }
 
+template <class T, class U, class UnaryPredicate>
+auto copy_if(T& destination, U& source, UnaryPredicate pred) {
+    return std::copy_if(source.begin(), source.end(), std::back_inserter(destination), pred);
+}
+
 template <class T, class U>
 typename T::iterator find(T& container, const U& value) {
     return std::find(container.begin(), container.end(), value);
