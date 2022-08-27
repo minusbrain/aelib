@@ -30,6 +30,14 @@ enum class Simple : uint32_t { a = 0x01, b = 0x02, c = 0x80000000 };
 
 enum class SimpleChar : char { a = 0x01, b = 0x02, c = 0x40 };
 
+TEST(flag_mask, CreateSimpleFM_UseIndexOperatorToSetAndCheckState) {
+    base::flag_mask<Simple> mask;
+    mask[Simple::c] = true;
+    mask[Simple::a] = false;
+    EXPECT_TRUE(mask[Simple::c]);
+    EXPECT_FALSE(mask[Simple::a]);
+}
+
 TEST(flag_mask, CreateSimpleFM_CheckAllAreUnset_ExpectUnset) {
     base::flag_mask<Simple> mask;
     EXPECT_FALSE(mask.check(Simple::a));

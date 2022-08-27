@@ -41,11 +41,12 @@ namespace base {
  *      };
  *
  *      base::flag_mask<MyEnum> mask;
-        mask.set(MyEnum::a).set(MyEnum::c);
-
-        if(mask.check(MyEnum::b)) {
-            ...
-        }
+ *      mask[MyEnum::a] = true;
+ *      mask[MyEnum::c] = false;
+ *
+ *      if(mask[MyEnum::b]) {
+ *          ...
+ *      }
  * \endcode
  */
 template <typename FLAG>
@@ -152,6 +153,30 @@ class flag_mask {
     void raw_set(const BASETYPE newvalue) { value = newvalue; }
 
     bool operator==(const flag_mask<FLAG>& other) const = default;
+
+    class flag_accessor {
+       public:
+        flag_accessor(flag_mask& mask, const FLAG flag) : _mask(mask), _flag(flag) {}
+        void operator=(bool set) {
+            if (set)
+                _mask.set(_flag);
+            else
+                _mask.unset(_flag);
+        }
+
+        operator bool() const { return _mask.check(_flag); }
+
+       private:
+        flag_mask<FLAG>& _mask;
+        const FLAG _flag;
+    };
+
+    /**
+     * @brief Access a flag via index operator
+     *
+     * Allows reading the state of a flag and setting the flag
+     */
+    flag_accessor operator[](const FLAG flag) { return flag_accessor(*this, flag); }
 
    private:
     BASETYPE value;
