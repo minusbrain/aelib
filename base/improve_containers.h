@@ -40,7 +40,7 @@ inline std::ostream& stream_out_plain_object(T obj, std::ostream& os) {
 
 template <>
 inline std::ostream& stream_out_plain_object<uint8_t>(uint8_t obj, std::ostream& os) {
-    os << "0x" << std::hex << std::setfill('0') << std::setw(2) << obj;
+    os << "0x" << std::hex << std::setfill('0') << std::setw(2) << (int)obj;
     return os;
 }
 

@@ -107,6 +107,15 @@ TEST(ContainerStreaming, StreamIntegerVector_ExpectCorrectString) {
     EXPECT_EQ(ref, os.str());
 }
 
+TEST(ContainerStreaming, StreamUInt8Vector_ExpectCorrectString) {
+    std::vector<uint8_t> dut = {0x10, 0x1F, 0x5, 0xFF};
+    std::string ref = "Vector {0x10, 0x1f, 0x05, 0xff}";
+    std::ostringstream os;
+    os << dut;
+
+    EXPECT_EQ(ref, os.str());
+}
+
 TEST(ContainerStreaming, StreamIntegerList_ExpectCorrectString) {
     std::list<int> dut = {13, 5, 24, 1};
     std::string ref = "List {13, 5, 24, 1}";
