@@ -55,6 +55,7 @@ Iterator __sorted_find_helper(Iterator from, Iterator to, const Iterator end, co
     }
     return end;  // Never reached code
 }
+
 /**
  * @brief      Finds a value in a sorted container using binary search
  *
@@ -81,5 +82,28 @@ typename Container::const_iterator sorted_find(const Container& cont, const Valu
     if (cont.size() == 0 || comp(value, *begin) || comp(*(end - 1), value)) return end;
     // Otherwise call the recursive helper function
     return __sorted_find_helper(begin, end - 1, end, value, comp);
+}
+
+/**
+ * @brief      Finds a value in a sorted container using binary search
+ *
+ * Use default comparison function "smaller than" and expected container
+ * sorted that way.
+ *
+ * @param[in]  cont       Container, must be sorted
+ * @param[in]  value      Value to search
+ *
+ * @tparam     Container  Type of container used
+ * @tparam     Value      Type of value stored in container
+ *
+ * @return     Iterator pointing to value if found or to end() of container if
+ *             not found. In case container is not sorted, behavior is
+ *             undefined. In case the value occurs more than once in the
+ *             container the iterator points to one of the instances of the
+ *             value. It is undefined which of the instances this is.
+ */
+template <class Container, typename Value>
+typename Container::const_iterator sorted_find(const Container& cont, const Value& value) {
+    return sorted_find(cont, value, [](const Value& lhs, const Value& rhs) { return lhs < rhs; });
 }
 }  // namespace base

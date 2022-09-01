@@ -27,10 +27,26 @@
 
 #include "gtest/gtest.h"
 
+TEST(SortedFind, IntegerVector_FindExistingValueDefaultComparison_ExpectCorrectIterator) {
+    std::vector<int> dut = {1, 2, 3, 4, 5, 6, 7, 8, 9, 89345, 999999};
+
+    auto it = base::sorted_find(dut, 5);
+
+    EXPECT_EQ(5, *it);
+}
+
 TEST(SortedFind, IntegerVector_FindExistingValue_ExpectCorrectIterator) {
     std::vector<int> dut = {1, 2, 3, 4, 5, 6, 7, 8, 9, 89345, 999999};
 
     auto it = base::sorted_find(dut, 5, [](auto lhs, auto rhs) { return lhs < rhs; });
+
+    EXPECT_EQ(5, *it);
+}
+
+TEST(SortedFind, IntegerVectorSortedDescending_FindExistingValue_ExpectCorrectIterator) {
+    std::vector<int> dut = {999999, 89345, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+
+    auto it = base::sorted_find(dut, 5, [](auto lhs, auto rhs) { return lhs > rhs; });
 
     EXPECT_EQ(5, *it);
 }
@@ -93,4 +109,20 @@ TEST(SortedFind, LargeVector_FindNonExistingValue_ExpectEndIterator) {
     auto it = base::sorted_find(dut, 3744, [](auto lhs, auto rhs) { return lhs < rhs; });
 
     EXPECT_EQ(dut.end(), it);
+}
+
+TEST(SortedFind, LargeVector_FindExistingValueWithCustomSort_ExpectCorrectIterator) {
+    std::vector<int> dut(1000);
+    auto ascending = [](auto lhs, auto rhs) { return lhs < rhs; };
+    auto descending = [](auto lhs, auto rhs) { return lhs < rhs; };
+    std::generate(dut.begin(), dut.end(), std::rand);
+    dut.push_back(3744);
+
+    base::sort(dut, ascending);
+    auto it = base::sorted_find(dut, 3744, ascending);
+    EXPECT_EQ(3744, *it);
+
+    base::sort(dut, descending);
+    it = base::sorted_find(dut, 3744, descending);
+    EXPECT_EQ(3744, *it);
 }
