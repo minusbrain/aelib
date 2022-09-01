@@ -118,8 +118,8 @@ class TestWorld : public ::testing::Test, public base::IPathfindWorld<TestNode> 
         }
     }
 
-    virtual std::vector<std::pair<TestNode, uint32_t>> getDirectNeigboursAndCosts(TestNode node) {
-        std::vector<std::pair<TestNode, uint32_t>> neigbourList{};
+    virtual std::vector<std::pair<TestNode, uint32_t>> getDirectNeighborsAndCosts(const TestNode& node) const {
+        std::vector<std::pair<TestNode, uint32_t>> neighborList{};
 
         for (int32_t row = (int32_t)node.first - 1; row <= (int32_t)node.first + 1; ++row) {
             for (int32_t col = (int32_t)node.second - 1; col <= (int32_t)node.second + 1; ++col) {
@@ -129,15 +129,15 @@ class TestWorld : public ::testing::Test, public base::IPathfindWorld<TestNode> 
                     if (row != (int32_t)node.first && col != (int32_t)node.second) {
                         cost = DIAGONAL_TRAVELCOST;
                     }
-                    neigbourList.push_back(std::pair<TestNode, uint32_t>{{row, col}, cost});
+                    neighborList.push_back(std::pair<TestNode, uint32_t>{{row, col}, cost});
                 }
             }
         }
 
-        return neigbourList;
+        return neighborList;
     }
 
-    virtual uint32_t getEstimatedCost(TestNode node1, TestNode node2) {
+    virtual uint32_t getEstimatedCost(const TestNode& node1, const TestNode& node2) const {
         return std::round(std::sqrt(std::pow(static_cast<float>(node1.first) - node2.first, 2.0) +
                                     std::pow(static_cast<float>(node1.second) - node2.second, 2.0)) *
                           SIMPLE_TRAVELCOST);
@@ -176,7 +176,7 @@ Expect Length to be 987 (7 * 141)
 TEST_F(TestWorld, EmptyWorld_SimpleAtoBDiagonal_CorrectCost) {
     setWorldEmpty();
 
-    base::Path<TestNode> path = base::Pathfinder<TestNode>::findPath(this, {1, 1}, {8, 8});
+    base::Path<TestNode> path = base::Pathfinder<TestNode>::findPath(*this, {1, 1}, {8, 8});
 
 #ifdef DEBUG_FLAG
     auto it = path.cbegin();
@@ -213,7 +213,7 @@ Expect Length to be 900 (9 * 100)
 TEST_F(TestWorld, EmptyWorld_SimpleAtoBStraight_CorrectCost) {
     setWorldEmpty();
 
-    base::Path<TestNode> path = base::Pathfinder<TestNode>::findPath(this, {0, 0}, {0, 9});
+    base::Path<TestNode> path = base::Pathfinder<TestNode>::findPath(*this, {0, 0}, {0, 9});
 
 #ifdef DEBUG_FLAG
     auto it = path.cbegin();
@@ -250,7 +250,7 @@ Expect Length to be 1246 (6 * 141 + 100)
 TEST_F(TestWorld, BarrierWorld_AtoB_CorrectCost) {
     setWorldBarrier();
 
-    base::Path<TestNode> path = base::Pathfinder<TestNode>::findPath(this, {6, 0}, {1, 9});
+    base::Path<TestNode> path = base::Pathfinder<TestNode>::findPath(*this, {6, 0}, {1, 9});
 
 #ifdef DEBUG_FLAG
     auto it = path.cbegin();
@@ -286,7 +286,7 @@ Expect Length to be 1446 (6 * 141 + 6 * 100)
 */
 TEST_F(TestWorld, CrossWorld_AtoB_CorrectCost) {
     setWorldCross();
-    base::Path<TestNode> path = base::Pathfinder<TestNode>::findPath(this, {4, 4}, {6, 6});
+    base::Path<TestNode> path = base::Pathfinder<TestNode>::findPath(*this, {4, 4}, {6, 6});
 
 #ifdef DEBUG_FLAG
     auto it = path.cbegin();

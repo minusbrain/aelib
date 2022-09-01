@@ -40,16 +40,24 @@ namespace base {
 template <class T_Node>
 class Path {
    public:
-    Path(std::vector<T_Node> path, uint32_t cost) : _success(true), _path(path), _cost(cost) {}
+    Path(const std::vector<T_Node> &path, uint32_t cost) : _success(true), _path(path), _cost(cost) {}
+    Path(std::vector<T_Node> &&path, uint32_t cost) : _success(true), _path(std::move(path)), _cost(cost) {}
+
     Path(bool success = false) : _success(success), _path(), _cost(0) {}
+    Path(const Path &other) = default;
+    Path(Path &&other) = default;
 
-    bool isValid() { return _success; }
+    Path &operator=(const Path &other) = default;
+    Path &operator=(Path &&other) = default;
+    ~Path() = default;
 
-    uint32_t getCost() { return _cost; }
+    bool isValid() const { return _success; }
 
-    typename std::vector<T_Node>::const_iterator cbegin(void) { return _path.cbegin(); }
+    uint32_t getCost() const { return _cost; }
 
-    typename std::vector<T_Node>::const_iterator cend(void) { return _path.cend(); }
+    typename std::vector<T_Node>::const_iterator cbegin(void) const { return _path.cbegin(); }
+
+    typename std::vector<T_Node>::const_iterator cend(void) const { return _path.cend(); }
 
    private:
     bool _success;
@@ -60,8 +68,31 @@ class Path {
 template <class T_Node>
 class IPathfindWorld {
    public:
-    virtual std::vector<std::pair<T_Node, uint32_t>> getDirectNeigboursAndCosts(T_Node) = 0;
-    virtual uint32_t getEstimatedCost(T_Node, T_Node) = 0;
+    /**
+     * @brief Get all direct neighbors and the actual cost to travel to them
+     *
+     * Higher cost means worth. It must be ensured that a total path length must
+     * not exceed numeric_limits<uint32_t>::max .
+     * Cost is use case dependent and can mean anything like time, distance, monetary
+     * cost, ...
+     *
+     * @param node The node to get the neighbors and their travel cost for
+     *
+     * @return std::vector<std::pair<T_Node, uint32_t>> A vector of neighbor / cost pairs
+     */
+    virtual std::vector<std::pair<T_Node, uint32_t>> getDirectNeighborsAndCosts(const T_Node &node) const = 0;
+
+    /**
+     * @brief Get the Estimated Cost to travel from one node to the other
+     *
+     * @param startNode start node to estimate the cost from
+     * @param destNode destination node to estimate the cost to
+     *
+     * @return uint32_t The estimated code to travel from start to destination. Heuristic.
+     *                  must NOT over-estimate the cost or the algorithm will not find the
+     *                  shortest route.
+     */
+    virtual uint32_t getEstimatedCost(const T_Node &startNode, const T_Node &destNode) const = 0;
 
     virtual ~IPathfindWorld() {}
 };
@@ -69,13 +100,13 @@ class IPathfindWorld {
 template <class T_Node>
 class Pathfinder {
    public:
-    static Path<T_Node> findPath(IPathfindWorld<T_Node> *world, T_Node dest, T_Node start) {
+    static Path<T_Node> findPath(const IPathfindWorld<T_Node> &world, const T_Node &dest, const T_Node &start) {
         std::map<T_Node, Metadata> metaLUT;
         std::set<T_Node> closedSet;
         std::vector<T_Node> openList;
 
         openList.push_back(start);
-        metaLUT[start] = Metadata{0, world->getEstimatedCost(start, dest), std::nullopt};
+        metaLUT[start] = Metadata{0, world.getEstimatedCost(start, dest), std::nullopt};
 
         while (openList.size() > 0) {
             std::sort(openList.begin(), openList.end(), [&metaLUT](const T_Node &lhs, const T_Node &rhs) -> bool {
@@ -93,30 +124,30 @@ class Pathfinder {
             openList.pop_back();
             closedSet.insert(current);
 
-            auto neigbours = world->getDirectNeigboursAndCosts(current);
+            auto neighbors = world.getDirectNeighborsAndCosts(current);
 
-            for (auto neigbour : neigbours) {
-                if (closedSet.find(neigbour.first) != closedSet.end()) {
+            for (auto neighbor : neighbors) {
+                if (closedSet.find(neighbor.first) != closedSet.end()) {
                     continue;
                 }
 
-                if (std::find(openList.begin(), openList.end(), neigbour.first) == openList.end()) {
-                    openList.push_back(neigbour.first);
+                if (std::find(openList.begin(), openList.end(), neighbor.first) == openList.end()) {
+                    openList.push_back(neighbor.first);
                 }
 
-                if (metaLUT.find(neigbour.first) == metaLUT.end()) {
-                    metaLUT[neigbour.first] = Metadata{std::numeric_limits<uint32_t>::max(),
+                if (metaLUT.find(neighbor.first) == metaLUT.end()) {
+                    metaLUT[neighbor.first] = Metadata{std::numeric_limits<uint32_t>::max(),
                                                        std::numeric_limits<uint32_t>::max(), std::nullopt};
                 }
 
-                uint32_t tentative_g = metaLUT[current].g + neigbour.second;
-                if (tentative_g >= metaLUT[neigbour.first].g) {
+                uint32_t tentative_g = metaLUT[current].g + neighbor.second;
+                if (tentative_g >= metaLUT[neighbor.first].g) {
                     continue;
                 }
 
-                metaLUT[neigbour.first].cameFrom = current;
-                metaLUT[neigbour.first].g = tentative_g;
-                metaLUT[neigbour.first].f = tentative_g + world->getEstimatedCost(neigbour.first, dest);
+                metaLUT[neighbor.first].cameFrom = current;
+                metaLUT[neighbor.first].g = tentative_g;
+                metaLUT[neighbor.first].f = tentative_g + world.getEstimatedCost(neighbor.first, dest);
             }
         }
 
