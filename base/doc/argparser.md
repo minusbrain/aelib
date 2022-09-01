@@ -2,7 +2,7 @@
 
 Simple tooling to help you parse the command line parameters to your program. Best explained with an example.
 
-# Example usage
+## Example usage
 
 ```cpp
 #include <cassert>
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-# Support
+## Support
 
 Currently the following option types are supported:
 * std::string  -> Expects and returns a std::string
@@ -63,7 +63,7 @@ The following syntax variants are allowed for parameters:
 Options can have default values, can be mandatory and can have a description. Not logical combinations (e.g.
 mandatory but with default value) will be rejected.
 
-# Help
+## Help
 
 `parser.print_help(std::cout)` will print usage help to standard out (or any other ostream). The help for the
 example above looks like this
@@ -77,7 +77,7 @@ Parameters:
 -v | --verbose          : Activate more verbose output
 ```
 
-# Future / FixMes / Todos
+## Future / FixMes / Todos
 
 * Add Feature: positional arguments
 * Add Feature: Sub commands
