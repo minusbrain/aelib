@@ -24,6 +24,5 @@ SET (THIS_SRC
     )
 
 add_library(aelib_sm ${THIS_SRC})
-set_property(TARGET aelib_sm PROPERTY CXX_STANDARD 17)
 
 add_subdirectory (ut)
