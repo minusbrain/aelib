@@ -5,13 +5,16 @@ for C++ based projects.
 ## Modules
 * [Command-Line argument parsing](base/doc/argparser.md)
 * [A* Star Pathfinding](base/doc/astar.md)
+* [Additional STL algorithms](base/doc/algorithms.md)
+    * consecutive_find - Find n equal consecutive elements
+    * find_last - Find last matching element in a container
+    * sorted_find - Binary search find in sorted container
+    * transform_if - Conditionally transform each element of an input range to an output container
 
 ## STL related functions:
 
-* consecutive_find algorithm -> Find the first occurrence of 'n' consecutive equal values in range
-* find_last algorithm -> Find the last occurrence of value in range
-* transform_if algorithm -> Modifies each value in a range that matches a condition
 * OStream Helper -> Some helper functions to print out data using ostreams
+*
 
 ## Registry Pattern template
 
