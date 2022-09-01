@@ -152,7 +152,11 @@ class flag_mask {
      */
     void raw_set(const BASETYPE newvalue) { value = newvalue; }
 
+#if __cplusplus >= 202002L
     bool operator==(const flag_mask<FLAG>& other) const = default;
+#else
+    bool operator==(const flag_mask<FLAG>& other) const { return value == other.value; }
+#endif
 
     class flag_accessor {
        public:
