@@ -23,13 +23,6 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/*
- FIXME: Move from header only to cpp
- FIXME: positional arguments
- FIXME: Sub commands
- FIXME: Custom types
-*/
-
 #pragma once
 
 #include <algorithm>
