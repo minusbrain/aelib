@@ -58,7 +58,11 @@ The following syntax variants are allowed for parameters:
 * --option=value
 * -o value
 * -o=value
-* -ovalue
+
+The following syntax variants are allowed for flags:
+* --option --flag --more
+* -o -f -m
+* -ofm
 
 Options can have default values, can be mandatory and can have a description. Not logical combinations (e.g.
 mandatory but with default value) will be rejected.

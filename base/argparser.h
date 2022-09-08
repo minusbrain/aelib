@@ -51,10 +51,10 @@ using T_parsed_option_map = std::map<std::string, T_strict_option_type>;
 
 }  // namespace base
 
+namespace base {
+
 // Forward declarations stream output helper
 inline std::ostream& operator<<(std::ostream& os, const base::cl_option& opt);
-
-namespace base {
 
 /*
     Parsing result will be returned back to user
@@ -103,6 +103,8 @@ class argparse_result {
     const std::vector<std::string>& get_errors() const { return _errors; }
 
    private:
+    friend std::ostream& operator<<(std::ostream& os, const argparse_result& parse_result);
+
     T_parsed_option_map _parsed_options;
     std::vector<std::string> _errors;
     bool _success = true;
@@ -256,26 +258,31 @@ class cl_option {
         return _valid;
     }
 
-    bool matches(std::string option) const {
+    bool matches_long(std::string option) const {
         if (has_long_option() && (option.find(get_long_option()) == 0))
-            return true;
-        else if (has_short_option() && (option[0] == get_short_option()))
             return true;
         else
             return false;
     }
 
-    void consume(parse_context& ctxt, std::vector<std::string>& args, size_t& pos, short_or_long_option sol) const {
+    bool matches_short(char option) const {
+        if (has_short_option() && (option == get_short_option()))
+            return true;
+        else
+            return false;
+    }
+
+    bool consume(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) const {
         auto it = base::find(args[pos], '=');
         std::string value;
+        bool holdsPotentialMoreOptions = false;
         if (it != args[pos].end()) {
             std::copy(it + 1, args[pos].end(), std::back_inserter(value));
-        } else if (sol == SHORT_OPTION && args[pos].size() > 2) {
-            std::copy(args[pos].begin() + 2, args[pos].end(), std::back_inserter(value));
         }
         if (std::holds_alternative<bool>(_type_indicator)) {
             ctxt._parsed.insert(get_name(), true);
             ctxt.remove_from_missing_mandatory_options(get_name());
+            holdsPotentialMoreOptions = true;
         } else {
             if (value.empty() && args.size() <= pos + 1) {
                 std::stringstream err;
@@ -311,6 +318,7 @@ class cl_option {
                 }
             }
         }
+        return holdsPotentialMoreOptions;
     }
 
    private:
@@ -495,19 +503,26 @@ class argparser {
         std::string param{};
         std::copy(args[pos].begin() + 2, args[pos].end(), std::back_inserter(param));
         for (auto& opt : ctxt._options) {
-            if (opt.matches(param)) {
-                opt.consume(ctxt, args, pos, cl_option::LONG_OPTION);
+            if (opt.matches_long(param)) {
+                (void)opt.consume(ctxt, args, pos);
+                break;
             }
         }
     }
 
     void handle_potential_short_option(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) {
+        bool continueLookingForShortOptions = true;
         std::string param{};
         std::copy(args[pos].begin() + 1, args[pos].end(), std::back_inserter(param));
-        for (auto& opt : ctxt._options) {
-            if (opt.matches(param)) {
-                opt.consume(ctxt, args, pos, cl_option::SHORT_OPTION);
+        size_t i = 0;
+        while (continueLookingForShortOptions && param.size() > i) {
+            for (auto& opt : ctxt._options) {
+                if (opt.matches_short(param[i])) {
+                    continueLookingForShortOptions = opt.consume(ctxt, args, pos);
+                    break;
+                }
             }
+            ++i;
         }
     }
 
@@ -541,7 +556,9 @@ inline std::ostream& operator<<(std::ostream& os, const base::T_strict_option_ty
 }
 }  // namespace std
 
-std::ostream& operator<<(std::ostream& os, const base::cl_option& opt) {
+namespace base {
+
+std::ostream& operator<<(std::ostream& os, const cl_option& opt) {
     os << "Command Line Option ('" << opt.get_name() << "'";
     os << ", Status=" << (opt.is_valid() ? "valid" : "invalid");
     if (opt.has_short_option()) {
@@ -562,3 +579,12 @@ std::ostream& operator<<(std::ostream& os, const base::cl_option& opt) {
     os << ")";
     return os;
 }
+
+std::ostream& operator<<(std::ostream& os, const argparse_result& parse_result) {
+    os << "Parse result: " << (parse_result.success() ? "success" : "failed") << "\n";
+    os << "Parsed options: " << parse_result._parsed_options << "\n";
+    if (parse_result._errors.size() > 0) os << "Parse errors: " << parse_result._errors << "\n";
+    return os;
+}
+
+}  // namespace base

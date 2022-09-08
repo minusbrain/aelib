@@ -417,21 +417,6 @@ TEST(Argparser, InvalidLongOptionName_SimpleParser_ExpectNotValid) {
     EXPECT_THROW(parser.parse(args), std::exception);
 }
 
-TEST(Argparser,
-     AnotherAlternativeOptionValueFormatShortOption_SimpleParserGettingCorrectInput_ExpectSuccessfulParsing) {
-    argparser parser{"test"};
-    parser.add_option<int>("number").short_option('n');
-
-    EXPECT_TRUE(parser.all_options_valid());
-
-    std::vector<std::string> args{"test", "-n8"};
-    auto parsed = parser.parse(args);
-
-    EXPECT_TRUE(parsed.success());
-    EXPECT_TRUE(parsed.has_option("number"));
-    EXPECT_EQ(8, std::get<int>(parsed["number"]));
-}
-
 TEST(Argparser, AutoDeriveOptionTypeString) {
     argparser parser{"test"};
     auto& opt = parser.add_option<std::string>("number").short_option('n').default_value(std::string{"Ten"});
@@ -604,4 +589,43 @@ TEST(Argparser, ReadmeExample_ExpectNoErrors) {
     } catch (const std::exception& ex) {
         std::cout << "Parsing error: " << ex.what() << std::endl;
     }
+}
+
+TEST(Argparser, LetUnknowLongOptionStartWithKnownShortOptionChar_ExpectParameterNotFound) {
+    argparser parser{"test"};
+    parser.add_option<std::string>("number").long_option("number").short_option('n');
+
+    std::vector<std::string> args1{"test", "--nxxxx", "bla"};
+    auto parsed1 = parser.parse(args1);
+
+    EXPECT_FALSE(parsed1.has_option("number"));
+}
+
+TEST(Argparser, MultipleShortOptionFlagsWithOneMinusGivenInCmdLine_ExpectSuccessAndProperFlagsSet) {
+    argparser parser{"test"};
+    parser.add_flag("number").long_option("number").short_option('n');
+    parser.add_flag("other").long_option("other").short_option('o');
+    parser.add_flag("more").long_option("more").short_option('m');
+
+    std::vector<std::string> args1{"test", "-nm"};
+    auto parsed1 = parser.parse(args1);
+
+    EXPECT_TRUE(parsed1.success());
+    EXPECT_TRUE(parsed1.is_flag_set("number"));
+    EXPECT_FALSE(parsed1.is_flag_set("other"));
+    EXPECT_TRUE(parsed1.is_flag_set("more"));
+}
+
+TEST(Argparser, AmbiguityBetweenNextOptionOrValue_PreferValue) {
+    argparser parser{"test"};
+    parser.add_option<std::string>("number").short_option('n');
+    parser.add_option<std::string>("other").short_option('o');
+
+    std::vector<std::string> args1{"test", "-n", "-o"};
+    auto parsed1 = parser.parse(args1);
+
+    EXPECT_TRUE(parsed1.success());
+    EXPECT_TRUE(parsed1.has_option("number"));
+    EXPECT_EQ("-o", parsed1.get<std::string>("number"));
+    EXPECT_FALSE(parsed1.has_option("other"));
 }
