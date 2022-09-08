@@ -341,7 +341,7 @@ class cl_option {
 */
 class argparser {
    public:
-    argparser(std::string app_name) : _app_name(app_name), _options(){};
+    argparser(std::string app_name) : _fail_on_unknown(false), _app_name(app_name), _options(){};
     ~argparser() = default;
 
     std::string get_app_name() const { return _app_name; }
@@ -494,23 +494,33 @@ class argparser {
         return err.str();
     }
 
+    void fail_on_unknown(bool fail) { _fail_on_unknown = fail; }
+
     bool all_options_valid() const { return get_invalidity_reason().empty(); }
 
     // cl_parser.add_parameters("words", "List of words");
 
    private:
     void handle_potential_long_option(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) {
+        bool found = false;
         std::string param{};
         std::copy(args[pos].begin() + 2, args[pos].end(), std::back_inserter(param));
         for (auto& opt : ctxt._options) {
             if (opt.matches_long(param)) {
+                found = true;
                 (void)opt.consume(ctxt, args, pos);
                 break;
             }
         }
+        if (!found && _fail_on_unknown) {
+            std::stringstream err;
+            err << "Unknown option " << param;
+            ctxt._parsed.add_error(err.str());
+        }
     }
 
     void handle_potential_short_option(parse_context& ctxt, std::vector<std::string>& args, size_t& pos) {
+        bool found = false;
         bool continueLookingForShortOptions = true;
         std::string param{};
         std::copy(args[pos].begin() + 1, args[pos].end(), std::back_inserter(param));
@@ -518,14 +528,22 @@ class argparser {
         while (continueLookingForShortOptions && param.size() > i) {
             for (auto& opt : ctxt._options) {
                 if (opt.matches_short(param[i])) {
+                    found = true;
                     continueLookingForShortOptions = opt.consume(ctxt, args, pos);
                     break;
                 }
+            }
+            if (!found && _fail_on_unknown) {
+                std::stringstream err;
+                err << "Unknown option " << (char)param[i];
+                ctxt._parsed.add_error(err.str(), true);
+                found = true;
             }
             ++i;
         }
     }
 
+    bool _fail_on_unknown;
     std::string _app_name;
     std::vector<cl_option> _options;
 };

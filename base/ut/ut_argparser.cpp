@@ -629,3 +629,24 @@ TEST(Argparser, AmbiguityBetweenNextOptionOrValue_PreferValue) {
     EXPECT_EQ("-o", parsed1.get<std::string>("number"));
     EXPECT_FALSE(parsed1.has_option("other"));
 }
+
+TEST(Argparser, UnknownParamaterDontFailOnUnknown_ExpectSuccessfulParsing) {
+    argparser parser{"test"};
+    parser.add_option<std::string>("number").short_option('n');
+
+    std::vector<std::string> args1{"test", "-p"};
+    auto parsed1 = parser.parse(args1);
+
+    EXPECT_TRUE(parsed1.success());
+}
+
+TEST(Argparser, UnknownParamaterFailOnUnknown_ExpectUnsuccessfulParsing) {
+    argparser parser{"test"};
+    parser.add_option<std::string>("number").short_option('n');
+    parser.fail_on_unknown(true);
+
+    std::vector<std::string> args1{"test", "-p"};
+    auto parsed1 = parser.parse(args1);
+
+    EXPECT_FALSE(parsed1.success());
+}
