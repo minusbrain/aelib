@@ -58,4 +58,10 @@ inline Iter find_last(Iter first, Iter last, const T& val) {
 
     return lastfound;
 }
+
+template <class Container, class T>
+inline auto find_last(Container& container, const T& val) {
+    return find_last(container.begin(), container.end(), val);
+}
+
 }  // namespace base
