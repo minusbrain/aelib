@@ -67,7 +67,7 @@ class argparse_result {
     bool success() const { return _success; }
 
     template <typename T>
-    T get(const std::string& index) {
+    T get(const std::string& index) const {
         T temp{};
         try {
             T_strict_option_type opt = _parsed_options.at(index);
