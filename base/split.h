@@ -27,7 +27,7 @@
 #include <vector>
 
 namespace base {
-std::vector<std::string> split(std::string input, char sep) {
+inline std::vector<std::string> split(std::string input, char sep) {
     std::istringstream ss(input);
     std::string token;
     std::vector<std::string> returnVector;
