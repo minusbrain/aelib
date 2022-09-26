@@ -29,6 +29,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <set>
 #include <vector>
 
 namespace base {
@@ -115,6 +116,11 @@ inline std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
 template <typename T>
 inline std::ostream& operator<<(std::ostream& os, const std::list<T>& list) {
     return base::stream_out_plain_container<std::list<T>>("List", os, list);
+}
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const std::set<T>& list) {
+    return base::stream_out_plain_container<std::set<T>>("Set", os, list);
 }
 
 template <typename Key, typename Val>
