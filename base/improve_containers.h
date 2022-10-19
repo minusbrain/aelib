@@ -224,4 +224,12 @@ template <class T, class UnaryFunction>
 UnaryFunction for_each(T& container, UnaryFunction func) {
     return std::for_each(container.begin(), container.end(), func);
 }
+
+template <class T>
+void unique(T& container) {
+    sort(container);
+    auto last = std::unique(container.begin(), container.end());
+    container.erase(last, container.end());
+}
+
 }  // namespace base
