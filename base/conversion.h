@@ -24,11 +24,14 @@
  */
 #pragma once
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <iomanip>
 #include <ios>
+#include <limits>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace base {
 
@@ -124,4 +127,15 @@ T hexstring_2_bytes(const std::string& str) {
 
     return ret;
 }
+
+template <typename T>
+inline std::enable_if_t<std::is_integral_v<T>, std::vector<uint8_t>> to_byte_vector(T value) {
+    std::size_t bytes = sizeof(T);
+    std::vector<uint8_t> vec;
+    for (int i = bytes - 1; i >= 0; --i) {
+        vec.push_back((uint8_t)((value >> (i * 8)) & 0xFF));
+    }
+    return vec;
+}
+
 }  // namespace base
