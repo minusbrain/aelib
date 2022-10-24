@@ -31,6 +31,38 @@
 #define BASE_INTENTIONALLY_UNUSED(var) (void)var
 
 namespace base {
+class NONCOPYABLE {
+   public:
+    NONCOPYABLE() = default;
+    NONCOPYABLE(const NONCOPYABLE&) = delete;
+    NONCOPYABLE& operator=(const NONCOPYABLE&) = delete;
+
+    NONCOPYABLE(NONCOPYABLE&&) = default;
+    NONCOPYABLE& operator=(NONCOPYABLE&&) = default;
+};
+
+class NONMOVEABLE {
+   public:
+    NONMOVEABLE() = default;
+
+    NONMOVEABLE(const NONMOVEABLE&) = default;
+    NONMOVEABLE& operator=(const NONMOVEABLE&) = default;
+
+    NONMOVEABLE(NONMOVEABLE&&) = delete;
+    NONMOVEABLE& operator=(NONMOVEABLE&&) = delete;
+};
+
+class NONCOPYANDMOVEABLE {
+   public:
+    NONCOPYANDMOVEABLE() = default;
+
+    NONCOPYANDMOVEABLE(const NONCOPYANDMOVEABLE&) = delete;
+    NONCOPYANDMOVEABLE& operator=(const NONCOPYANDMOVEABLE&) = delete;
+
+    NONCOPYANDMOVEABLE(NONCOPYANDMOVEABLE&&) = delete;
+    NONCOPYANDMOVEABLE& operator=(NONCOPYANDMOVEABLE&&) = delete;
+};
+
 /**
  * \brief Returns the map-entry for provided key or nullptr if key does not
  * exist
