@@ -29,6 +29,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -230,6 +231,34 @@ void unique(T& container) {
     sort(container);
     auto last = std::unique(container.begin(), container.end());
     container.erase(last, container.end());
+}
+
+/**
+ * \brief Returns the map-entry for provided key or nullptr if key does not
+ * exist
+ *
+ * \param[in] container The map to search
+ * \param[in] key       The key to search for in map
+ * \return    Either a pointer to the item if key exists or a nullptr
+ */
+template <class T_key, class T_entry>
+T_entry* mapentry_or_null(const std::map<T_key, T_entry*>& container, T_key key) {
+    auto ret = container.find(key);
+    return (ret == container.end()) ? nullptr : ret->second;
+}
+
+/**
+ * \brief Returns the map-entry for provided key or nullptr if key does not
+ * exist
+ *
+ * \param[in] container The map to search
+ * \param[in] key       The key to search for in map
+ * \return    Either a pointer to the item if key exists or a nullptr
+ */
+template <class T_key, class T_entry>
+T_entry* mapentry_or_null(const std::map<T_key, std::unique_ptr<T_entry>>& container, T_key key) {
+    auto ret = container.find(key);
+    return (ret == container.end()) ? nullptr : ret->second.get();
 }
 
 }  // namespace base

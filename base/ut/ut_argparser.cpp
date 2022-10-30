@@ -650,3 +650,14 @@ TEST(Argparser, UnknownParamaterFailOnUnknown_ExpectUnsuccessfulParsing) {
 
     EXPECT_FALSE(parsed1.success());
 }
+
+TEST(Argparser, LongOptionWithSpecialChars_ExpectSuccessfulParsing) {
+    argparser parser{"test"};
+    parser.add_option<std::string>("longoption").long_option("a-long_option");
+    parser.fail_on_unknown(true);
+
+    std::vector<std::string> args1{"test", "--a-long_option", "bla"};
+    auto parsed1 = parser.parse(args1);
+
+    EXPECT_TRUE(parsed1.success());
+}

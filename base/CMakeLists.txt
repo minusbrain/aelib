@@ -14,6 +14,7 @@ SET (THIS_SRC
         conversion.h
         split.h
         oshelper.h
+        strings.h
     )
 
 add_subdirectory (ut)
