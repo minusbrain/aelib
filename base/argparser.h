@@ -198,11 +198,11 @@ class cl_option {
     char get_short_option() const { return _short_option.value(); }
 
     cl_option& long_option(std::string long_option) {
-        auto it = base::find_if(long_option, [](char c) { return !std::isalnum(c); });
+        auto it = base::find_if(long_option, [](char c) { return !std::isalnum(c) && c != '_' && c != '-'; });
         if (it != long_option.end()) {
             _valid = false;
-            throw std::invalid_argument(
-                "Trying to set long option to something containing non alphanumeric characters");
+            throw std::invalid_argument("Invalid option name '" + long_option +
+                                        "'. Only alphanumerics, '_' and '-' allowed");
         }
         _long_option = long_option;
         return *this;
@@ -598,7 +598,7 @@ std::ostream& operator<<(std::ostream& os, const cl_option& opt) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const argparse_result& parse_result) {
+inline std::ostream& operator<<(std::ostream& os, const argparse_result& parse_result) {
     os << "Parse result: " << (parse_result.success() ? "success" : "failed") << "\n";
     os << "Parsed options: " << parse_result._parsed_options << "\n";
     if (parse_result._errors.size() > 0) os << "Parse errors: " << parse_result._errors << "\n";
