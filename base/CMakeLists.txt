@@ -13,6 +13,7 @@ SET (THIS_SRC
         astar.h
         conversion.h
         split.h
+        oshelper.h
     )
 
 add_subdirectory (ut)
