@@ -31,6 +31,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <sstream>
 #include <vector>
 
 namespace base {
@@ -68,9 +69,9 @@ inline std::ostream& stream_out_plain_object<uint8_t>(uint8_t obj, std::ostream&
  * @return     The updated output stream
  */
 template <typename T>
-inline std::ostream& stream_out_plain_container(char const* str, std::ostream& os, const T& container) {
+inline std::ostream& stream_out_plain_container(const std::string& str, std::ostream& os, const T& container) {
     bool skip = true;
-    os << str << " {";
+    if (str.length() > 0) os << str << " {";
     for (auto& x : container) {
         if (skip) {
             skip = false;
@@ -80,20 +81,21 @@ inline std::ostream& stream_out_plain_container(char const* str, std::ostream& o
 
         stream_out_plain_object(x, os);
     }
-    os << "}";
+    if (str.length() > 0) os << "}";
     return os;
 }
 
-inline std::vector<std::string> tokenize(const std::string& input, char seperator) {
-    std::stringstream inputstream(input);
-    std::string token;
-    std::vector<std::string> tokens;
+template <typename T>
+inline std::string to_string(const T& container) {
+    std::stringstream ss;
 
-    while (getline(inputstream, token, seperator)) {
-        tokens.push_back(token);
-    }
-    return tokens;
+    (void)stream_out_plain_container("", ss, container);
+
+    return ss.str();
 }
+
+// Use base::split from strings.h instead
+// inline std::vector<std::string> tokenize(const std::string& input, char seperator)
 
 template <class T>
 inline std::vector<T>& push_back(std::vector<T>& target, const std::vector<T>& to_push) {
