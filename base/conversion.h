@@ -50,6 +50,25 @@ enum class HexStringFormat {
     Suffix_Comma             // b0h, 0bh, 13h
 };
 
+inline std::string uint_2_hexstring(unsigned int value, uint8_t width = 2,
+                                    HexStringFormat format = HexStringFormat::NoPrefix_NoComma_NoGap,
+                                    HexStringCapitalization cap = HexStringCapitalization::LowerCase) {
+    std::stringstream retval;
+
+    if (format == HexStringFormat::Prefix_Comma || format == HexStringFormat::Prefix_NoComma) {
+        retval << "0x";
+    }
+
+    retval << std::hex << (cap == HexStringCapitalization::UpperCase ? std::uppercase : std::nouppercase)
+           << std::setfill('0') << std::setw(width) << value;
+
+    if (format == HexStringFormat::Suffix_Comma || format == HexStringFormat::Suffix_NoComma) {
+        retval << "h";
+    }
+
+    return retval.str();
+}
+
 /**
  * @brief Converts your byte (uint8_t) container to a hexadecimal string with various formats
  *
