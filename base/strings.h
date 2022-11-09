@@ -45,17 +45,31 @@ inline void trim_inplace(std::string& s) {
     rtrim_inplace(s);
 }
 
-// trim from both ends (in place)
+// transform to upper (in place)
 inline void toupper_inplace(std::string& s) {
     std::for_each(s.begin(), s.end(), [](char& c) { c = std::toupper(c, std::locale()); });
 }
 
-// trim from both ends (in place)
+// transform to lower (in place)
 inline void tolower_inplace(std::string& s) {
     std::for_each(s.begin(), s.end(), [](char& c) { c = std::tolower(c, std::locale()); });
 }
 
-// trim from both ends (in place)
+// transform to upper
+inline std::string toupper(const std::string& in) {
+    std::string s(in);
+    std::for_each(s.begin(), s.end(), [](char& c) { c = std::toupper(c, std::locale()); });
+    return s;
+}
+
+// transform to lower
+inline std::string tolower(const std::string& in) {
+    std::string s(in);
+    std::for_each(s.begin(), s.end(), [](char& c) { c = std::tolower(c, std::locale()); });
+    return s;
+}
+
+// replace all chars (in place)
 inline void replace_all_inplace(std::string& s, const char search, const char replace) {
     std::for_each(s.begin(), s.end(), [&](char& c) {
         if (c == search) c = replace;
