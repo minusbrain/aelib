@@ -23,6 +23,7 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
+#include <optional>
 #include <string>
 
 #include "improve_containers.h"
@@ -76,10 +77,14 @@ inline void replace_all_inplace(std::string& s, const char search, const char re
     });
 }
 
-inline std::vector<std::string> split(const std::string& input, char sep) {
+inline std::vector<std::string> split(const std::string& input, char sep,
+                                      std::optional<size_t> size_hint = std::nullopt) {
     std::istringstream ss(input);
     std::string token;
     std::vector<std::string> returnVector;
+    if (size_hint) {
+        returnVector.reserve(*size_hint);
+    }
 
     while (std::getline(ss, token, sep)) {
         returnVector.push_back(token);
