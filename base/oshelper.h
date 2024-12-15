@@ -44,7 +44,7 @@ inline std::filesystem::path createTempDir(const std::string& dir_prefix) {
     std::string main_temp_folder = std::filesystem::temp_directory_path() / (dir_prefix + "XXXXXX");
 
     char dir_cstr[255] = "";
-    strncpy(dir_cstr, main_temp_folder.c_str(), 255);
+    strncpy(dir_cstr, main_temp_folder.c_str(), 254);
     mkdtemp(dir_cstr);
 
     std::filesystem::path dir{dir_cstr};
