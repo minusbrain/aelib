@@ -41,7 +41,7 @@ for C++ based projects.
     * ...
 * Registry Pattern - Register subclasses of a baseclass identified by a String and instantiate objects of them
 * Manager Pattern - Manage (add/remove/get) instances of objects of a baseclass
-* FlagMask - Bitmask that can be used for any integer based flag type (enums, ...)
+* [FlagMask](base/doc/flag_mask.md) - Bitmask that can be used for any integer based flag type (enums, ...)
 
 # sm - StateMachine Pattern
 
