@@ -1,7 +1,7 @@
 /**
  * @author     Andreas Evers
  *
- * @copyright  Copyright © 2020 Andreas Evers
+ * @copyright  Copyright © 2020-2025 Andreas Evers
  *
  * MIT License
  *
@@ -25,6 +25,7 @@
 #pragma once
 
 #include <algorithm>
+#include <format>
 #include <iomanip>
 #include <iostream>
 #include <list>
@@ -86,7 +87,7 @@ inline std::ostream& stream_out_plain_container(const std::string& str, std::ost
 }
 
 template <typename T>
-inline std::string to_string(const T& container) {
+inline std::string toString(const T& container) {
     std::stringstream ss;
 
     (void)stream_out_plain_container("", ss, container);
@@ -264,3 +265,110 @@ T_entry* mapentry_or_null(const std::map<T_key, std::unique_ptr<T_entry>>& conta
 }
 
 }  // namespace base
+
+// std::formatter specializations for modern C++ std::format and std::print support
+template <typename T, size_t size>
+struct std::formatter<std::array<T, size>> : std::formatter<std::string> {
+    auto format(const std::array<T, size>& arr, std::format_context& ctx) const {
+        std::string result = "Array {";
+        bool skip = true;
+        for (const auto& x : arr) {
+            if (skip) {
+                skip = false;
+            } else {
+                result += ", ";
+            }
+            if constexpr (std::is_same_v<T, uint8_t>) {
+                result += std::format("0x{:02x}", static_cast<int>(x));
+            } else {
+                result += std::format("{}", x);
+            }
+        }
+        result += "}";
+        return std::formatter<std::string>::format(result, ctx);
+    }
+};
+
+template <typename T>
+struct std::formatter<std::vector<T>> : std::formatter<std::string> {
+    auto format(const std::vector<T>& vec, std::format_context& ctx) const {
+        std::string result = "Vector {";
+        bool skip = true;
+        for (const auto& x : vec) {
+            if (skip) {
+                skip = false;
+            } else {
+                result += ", ";
+            }
+            if constexpr (std::is_same_v<T, uint8_t>) {
+                result += std::format("0x{:02x}", static_cast<int>(x));
+            } else {
+                result += std::format("{}", x);
+            }
+        }
+        result += "}";
+        return std::formatter<std::string>::format(result, ctx);
+    }
+};
+
+template <typename T>
+struct std::formatter<std::list<T>> : std::formatter<std::string> {
+    auto format(const std::list<T>& list, std::format_context& ctx) const {
+        std::string result = "List {";
+        bool skip = true;
+        for (const auto& x : list) {
+            if (skip) {
+                skip = false;
+            } else {
+                result += ", ";
+            }
+            if constexpr (std::is_same_v<T, uint8_t>) {
+                result += std::format("0x{:02x}", static_cast<int>(x));
+            } else {
+                result += std::format("{}", x);
+            }
+        }
+        result += "}";
+        return std::formatter<std::string>::format(result, ctx);
+    }
+};
+
+template <typename T>
+struct std::formatter<std::set<T>> : std::formatter<std::string> {
+    auto format(const std::set<T>& set, std::format_context& ctx) const {
+        std::string result = "Set {";
+        bool skip = true;
+        for (const auto& x : set) {
+            if (skip) {
+                skip = false;
+            } else {
+                result += ", ";
+            }
+            if constexpr (std::is_same_v<T, uint8_t>) {
+                result += std::format("0x{:02x}", static_cast<int>(x));
+            } else {
+                result += std::format("{}", x);
+            }
+        }
+        result += "}";
+        return std::formatter<std::string>::format(result, ctx);
+    }
+};
+
+template <typename Key, typename Val>
+struct std::formatter<std::map<Key, Val>> : std::formatter<std::string> {
+    auto format(const std::map<Key, Val>& map, std::format_context& ctx) const {
+        std::string result = "Map {";
+        bool skip = true;
+        for (const auto& x : map) {
+            if (skip) {
+                skip = false;
+            } else {
+                result += ", ";
+            }
+            result += std::format("{{{} -> {}}}", x.first, x.second);
+        }
+        result += "}";
+        return std::formatter<std::string>::format(result, ctx);
+    }
+};

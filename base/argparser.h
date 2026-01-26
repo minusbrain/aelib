@@ -1,7 +1,7 @@
 /**
  * @author     Andreas Evers
  *
- * @copyright  Copyright © 2021 Andreas Evers
+ * @copyright  Copyright © 2021-2025 Andreas Evers
  *
  * MIT License
  *
@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <format>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -92,7 +93,7 @@ class argparse_result {
             return false;
     }
 
-    const T_parsed_option_map& get_options() { return _parsed_options; }
+    const T_parsed_option_map& get_options() const { return _parsed_options; }
 
     void insert(std::string key, T_strict_option_type value) { _parsed_options.insert_or_assign(key, value); }
     void add_error(std::string error, bool fatal = false) {
@@ -606,3 +607,66 @@ inline std::ostream& operator<<(std::ostream& os, const argparse_result& parse_r
 }
 
 }  // namespace base
+
+// std::formatter specializations for modern C++ std::format and std::print support
+template <>
+struct std::formatter<base::T_strict_option_type> : std::formatter<std::string> {
+    auto format(const base::T_strict_option_type& val, std::format_context& ctx) const {
+        std::string result;
+        std::visit(
+            [&result](auto&& arg) {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, int>)
+                    result = std::format("{}", arg);
+                else if constexpr (std::is_same_v<T, float>)
+                    result = std::format("{}", arg);
+                else if constexpr (std::is_same_v<T, double>)
+                    result = std::format("{}", arg);
+                else if constexpr (std::is_same_v<T, std::string>)
+                    result = std::format("\"{}\"", arg);
+                else if constexpr (std::is_same_v<T, bool>)
+                    result = arg ? "true" : "false";
+                else
+                    result = "undefined";
+            },
+            val);
+        return std::formatter<std::string>::format(result, ctx);
+    }
+};
+
+template <>
+struct std::formatter<base::cl_option> : std::formatter<std::string> {
+    auto format(const base::cl_option& opt, std::format_context& ctx) const {
+        std::string result = std::format("Command Line Option ('{}'", opt.get_name());
+        result += std::format(", Status={}", opt.is_valid() ? "valid" : "invalid");
+        if (opt.has_short_option()) {
+            result += std::format(", Short='-{}'", opt.get_short_option());
+        }
+        if (opt.has_long_option()) {
+            result += std::format(", Long='--{}'", opt.get_long_option());
+        }
+        if (opt.has_description()) {
+            result += std::format(", Description='{}'", opt.get_description());
+        }
+        if (opt.has_default_value()) {
+            result += std::format(", Default={}", opt.get_default_value());
+        }
+        if (opt.is_mandatory()) {
+            result += ", MANDATORY";
+        }
+        result += ")";
+        return std::formatter<std::string>::format(result, ctx);
+    }
+};
+
+template <>
+struct std::formatter<base::argparse_result> : std::formatter<std::string> {
+    auto format(const base::argparse_result& parse_result, std::format_context& ctx) const {
+        std::string result = std::format("Parse result: {}\n", parse_result.success() ? "success" : "failed");
+        result += std::format("Parsed options: {}\n", parse_result.get_options());
+        if (parse_result.get_errors().size() > 0) {
+            result += std::format("Parse errors: {}\n", parse_result.get_errors());
+        }
+        return std::formatter<std::string>::format(result, ctx);
+    }
+};
