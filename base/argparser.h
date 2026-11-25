@@ -27,7 +27,9 @@
 
 #include <algorithm>
 #include <exception>
+#if __cplusplus >= 202002L && __has_include(<format>)
 #include <format>
+#endif
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -608,6 +610,7 @@ inline std::ostream& operator<<(std::ostream& os, const argparse_result& parse_r
 
 }  // namespace base
 
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 // std::formatter specializations for modern C++ std::format and std::print support
 template <>
 struct std::formatter<base::T_strict_option_type> : std::formatter<std::string> {
@@ -670,3 +673,4 @@ struct std::formatter<base::argparse_result> : std::formatter<std::string> {
         return std::formatter<std::string>::format(result, ctx);
     }
 };
+#endif

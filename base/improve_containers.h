@@ -25,7 +25,10 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
+#if __cplusplus >= 202002L && __has_include(<format>)
 #include <format>
+#endif
 #include <iomanip>
 #include <iostream>
 #include <list>
@@ -266,6 +269,7 @@ T_entry* mapentry_or_null(const std::map<T_key, std::unique_ptr<T_entry>>& conta
 
 }  // namespace base
 
+#if defined(__cpp_lib_format) && __cpp_lib_format >= 201907L
 // std::formatter specializations for modern C++ std::format and std::print support
 template <typename T, size_t size>
 struct std::formatter<std::array<T, size>> : std::formatter<std::string> {
@@ -372,3 +376,4 @@ struct std::formatter<std::map<Key, Val>> : std::formatter<std::string> {
         return std::formatter<std::string>::format(result, ctx);
     }
 };
+#endif
