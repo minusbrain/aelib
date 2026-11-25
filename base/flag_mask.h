@@ -23,8 +23,10 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
+#include <bitset>
 #include <initializer_list>
 #include <limits>
+#include <ostream>
 #include <type_traits>
 
 namespace base {
@@ -60,6 +62,12 @@ class flag_mask {
      * @param[in]  init  The initial raw flagmask value
      */
     flag_mask(const BASETYPE init) : value(init) {}
+
+    flag_mask(std::initializer_list<FLAG> flags) : value(0) {
+        for (auto flag : flags) {
+            set(flag);
+        }
+    }
 
     /**
      * @brief      Instantiate flagmask with all bits off
@@ -139,12 +147,38 @@ class flag_mask {
         return true;
     }
 
+    bool check_none(std::initializer_list<const FLAG> flags) const {
+        for (auto flag : flags) {
+            if (check(flag)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    flag_mask& operator+=(FLAG flag) { return set(flag); }
+    flag_mask& operator-=(FLAG flag) { return unset(flag); }
+
+    flag_mask& operator+=(std::initializer_list<FLAG> flags) {
+        for (auto flag : flags) {
+            set(flag);
+        }
+        return *this;
+    }
+
+    flag_mask& operator-=(std::initializer_list<FLAG> flags) {
+        for (auto flag : flags) {
+            unset(flag);
+        }
+        return *this;
+    }
+
     /**
      * @brief      Get the read-only internal flagmask value
      *
      * @return     Flagmask value
      */
-    BASETYPE raw_get() { return value; }
+    BASETYPE raw_get() const { return value; }
 
     /**
      * @brief      Set the internal flagmask value
@@ -186,4 +220,10 @@ class flag_mask {
    private:
     BASETYPE value;
 };
+
+template <typename FLAG>
+std::ostream& operator<<(std::ostream& os, const flag_mask<FLAG>& mask) {
+    return os << std::bitset<std::numeric_limits<typename flag_mask<FLAG>::BASETYPE>::digits>(
+                     static_cast<unsigned long long>(mask.raw_get()));
+}
 }  // namespace base

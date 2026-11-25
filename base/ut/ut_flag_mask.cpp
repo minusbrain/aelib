@@ -187,3 +187,19 @@ TEST(flag_mask, ImplicitFromInteger) {
 
     my_function(0x80000001);
 }
+
+TEST(flag_mask, EmptyAndRepeatedFlagLists) {
+    base::flag_mask<Simple> mask{};
+    EXPECT_TRUE(mask.check_none({}));
+    mask += {Simple::a, Simple::a};
+    EXPECT_FALSE(mask.check_none({Simple::a, Simple::b}));
+    mask -= {Simple::a, Simple::a};
+    EXPECT_TRUE(mask.check_none({Simple::a, Simple::b}));
+}
+
+TEST(flag_mask, StreamOutConstMaskAndReturnStream) {
+    const base::flag_mask<SimpleChar> mask{SimpleChar::a};
+    std::stringstream ss;
+    (ss << mask) << '!';
+    EXPECT_EQ("0000001!", ss.str());
+}
